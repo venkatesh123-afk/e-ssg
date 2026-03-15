@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'syllabus_details_page.dart';
+import 'exam_syllabus_details_page.dart';
 import 'add_edit_syllabus_page.dart';
 import '../widgets/staff_header.dart';
 import '../controllers/manage_syllabus_controller.dart';
@@ -15,7 +15,9 @@ class ManageSyllabusPage extends StatefulWidget {
 }
 
 class _ManageSyllabusPageState extends State<ManageSyllabusPage> {
-  final ManageSyllabusController controller = Get.put(ManageSyllabusController());
+  final ManageSyllabusController controller = Get.put(
+    ManageSyllabusController(),
+  );
   final TextEditingController _searchController = TextEditingController();
 
   late final SyllabusBatchModel batch;
@@ -42,10 +44,7 @@ class _ManageSyllabusPageState extends State<ManageSyllabusPage> {
       backgroundColor: Colors.white,
       body: Column(
         children: [
-          StaffHeader(
-            title: "Manage Syllabus",
-            onBack: () => Get.back(),
-          ),
+          StaffHeader(title: "Manage Syllabus", onBack: () => Get.back()),
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(16),
@@ -98,9 +97,13 @@ class _ManageSyllabusPageState extends State<ManageSyllabusPage> {
                           ),
                           child: TextField(
                             controller: _searchController,
-                            onChanged: (value) => controller.searchQuery.value = value,
+                            onChanged: (value) =>
+                                controller.searchQuery.value = value,
                             decoration: const InputDecoration(
-                              prefixIcon: Icon(Icons.search, color: Colors.black54),
+                              prefixIcon: Icon(
+                                Icons.search,
+                                color: Colors.black54,
+                              ),
                               hintText: "Type a Keyword.....",
                               border: InputBorder.none,
                             ),
@@ -123,9 +126,11 @@ class _ManageSyllabusPageState extends State<ManageSyllabusPage> {
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
                             itemCount: controller.filteredSubjects.length,
-                            separatorBuilder: (context, index) => const SizedBox(height: 15),
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(height: 15),
                             itemBuilder: (context, index) {
-                              final subject = controller.filteredSubjects[index];
+                              final subject =
+                                  controller.filteredSubjects[index];
                               return _buildSubjectCard(index + 1, subject);
                             },
                           );
@@ -167,15 +172,22 @@ class _ManageSyllabusPageState extends State<ManageSyllabusPage> {
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
-                  color: hasSyllabus ? const Color(0xFFE2F3E7) : const Color(0xFFFFF2DE),
+                  color: hasSyllabus
+                      ? const Color(0xFFE2F3E7)
+                      : const Color(0xFFFFF2DE),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
                   hasSyllabus ? "Added" : "Not Added",
                   style: TextStyle(
-                    color: hasSyllabus ? const Color(0xFF2E7D32) : Colors.orange,
+                    color: hasSyllabus
+                        ? const Color(0xFF2E7D32)
+                        : Colors.orange,
                     fontSize: 12,
                   ),
                 ),
@@ -191,27 +203,37 @@ class _ManageSyllabusPageState extends State<ManageSyllabusPage> {
               ),
               const SizedBox(width: 10),
               InkWell(
-                onTap: () => Get.to(() => const AddEditSyllabusPage(), arguments: {
-                  'examId': batch.examId,
-                  'batchId': batch.batchId,
-                  'subjectId': subject.id,
-                  'subjectName': subject.subjectName,
-                  'syllabus': subject.syllabus,
-                }),
+                onTap: () => Get.to(
+                  () => const AddEditSyllabusPage(),
+                  arguments: {
+                    'examId': batch.examId,
+                    'batchId': batch.batchId,
+                    'subjectId': subject.id,
+                    'subjectName': subject.subjectName,
+                    'syllabus': subject.syllabus,
+                  },
+                ),
                 child: const Icon(Icons.edit, color: Colors.orange, size: 20),
               ),
               const SizedBox(width: 15),
               InkWell(
-                onTap: () => Get.to(() => const SyllabusDetailsPage(), arguments: {
-                  'subjectName': subject.subjectName,
-                  'examName': examName,
-                  'batchName': batch.batchName,
-                  'courseName': batch.courseName,
-                  'branchName': batch.branchName,
-                  'groupName': batch.groupName,
-                  'syllabusContent': subject.syllabus,
-                }),
-                child: const Icon(Icons.menu_book, color: Colors.indigo, size: 20),
+                onTap: () => Get.to(
+                  () => const SyllabusDetailsPage(),
+                  arguments: {
+                    'subjectName': subject.subjectName,
+                    'examName': examName,
+                    'batchName': batch.batchName,
+                    'courseName': batch.courseName,
+                    'branchName': batch.branchName,
+                    'groupName': batch.groupName,
+                    'syllabusContent': subject.syllabus,
+                  },
+                ),
+                child: const Icon(
+                  Icons.menu_book,
+                  color: Colors.indigo,
+                  size: 20,
+                ),
               ),
             ],
           ),

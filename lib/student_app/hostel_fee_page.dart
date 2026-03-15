@@ -261,10 +261,12 @@ class _HostelFeesPageState extends State<HostelFeesPage>
           physics: const BouncingScrollPhysics(),
           child: Row(
             children: [
-              _customBtn(Icons.refresh, "Refresh", [
-                const Color(0xFF9F7AEA),
-                const Color(0xFFD6BCFA),
-              ], () => _fetchData(showLoading: false, forceRefresh: true)),
+              _customBtn(
+                Icons.refresh,
+                "Refresh",
+                [const Color(0xFF9F7AEA), const Color(0xFFD6BCFA)],
+                () => _fetchData(showLoading: false, forceRefresh: true),
+              ),
               const SizedBox(width: 8),
               _customBtn(Icons.print, "Print Statement", [
                 const Color(0xFF48BB78),
@@ -898,11 +900,12 @@ class _HostelFeesPageState extends State<HostelFeesPage>
                 onPressed: () async {
                   if (viewUrl.isNotEmpty) {
                     final Uri url = Uri.parse(viewUrl);
-                    if (await canLaunchUrl(url))
+                    if (await canLaunchUrl(url)) {
                       await launchUrl(
                         url,
                         mode: LaunchMode.externalApplication,
                       );
+                    }
                   } else {
                     Navigator.push(
                       context,

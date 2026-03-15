@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../widgets/staff_header.dart';
+import '../controllers/assign_incharge_controller.dart';
+import '../model/branch_model.dart';
+import '../model/hostel_model.dart';
+import '../model/floor_incharge_model.dart';
+import '../model/floor_model.dart';
+import '../model/room_model.dart';
 
 class AssignInchargePage extends StatefulWidget {
   const AssignInchargePage({super.key});
@@ -11,13 +17,7 @@ class AssignInchargePage extends StatefulWidget {
 
 class _AssignInchargePageState extends State<AssignInchargePage> {
   final _formKey = GlobalKey<FormState>();
-
-  // Dropdown values
-  String? selectedBranch;
-  String? selectedBuilding;
-  String? selectedIncharge;
-  String? selectedFloor;
-  String? selectedRooms; // Using a single selection for now as per UI hint
+  final controller = Get.put(AssignInchargeController());
 
   // Constants
   static const Color lavenderBg = Color(0xFFF1F4FF);
@@ -51,105 +51,127 @@ class _AssignInchargePageState extends State<AssignInchargePage> {
                           ),
                         ],
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildLabel("Branch"),
-                          _buildDropdown(
-                            hint: "Select Branch",
-                            value: selectedBranch,
-                            items: ["EAMCET", "NEET"],
-                            onChanged: (v) =>
-                                setState(() => selectedBranch = v),
-                          ),
-
-                          _buildLabel("Building"),
-                          _buildDropdown(
-                            hint: "Select Group", // Matching UI hint in image
-                            value: selectedBuilding,
-                            items: ["Building 1", "Building 2"],
-                            onChanged: (v) =>
-                                setState(() => selectedBuilding = v),
-                          ),
-
-                          _buildLabel("Incharge"),
-                          _buildDropdown(
-                            hint: "Select Course", // Matching UI hint in image
-                            value: selectedIncharge,
-                            items: ["Staff A", "Staff B"],
-                            onChanged: (v) =>
-                                setState(() => selectedIncharge = v),
-                          ),
-
-                          _buildLabel("Floor"),
-                          _buildDropdown(
-                            hint: "Select Batch", // Matching UI hint in image
-                            value: selectedFloor,
-                            items: ["Floor 1", "Floor 2"],
-                            onChanged: (v) => setState(() => selectedFloor = v),
-                          ),
-
-                          _buildLabel("Assign Rooms"),
-                          _buildTextField(
-                            hint: "Select Exam", // Matching UI hint in image
-                            onChanged: (v) => selectedRooms = v,
-                          ),
-
-                          const SizedBox(height: 25),
-
-                          // ================= ASSIGN ROOM BUTTON =================
-                          Container(
-                            width: double.infinity,
-                            height: 55,
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [Color(0xFF7D74FC), Color(0xFFD08EF7)],
-                                begin: Alignment.centerLeft,
-                                end: Alignment.centerRight,
-                              ),
-                              borderRadius: BorderRadius.circular(15),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.25),
-                                  blurRadius: 4,
-                                  offset: const Offset(0, 0),
-                                ),
-                              ],
+                      child: Obx(() {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildLabel("Branch"),
+                            _buildGenericDropdown<BranchModel>(
+                              hint: "Select Branch",
+                              value: controller.selectedBranch.value,
+                              items: controller.branches,
+                              itemLabel: (b) => b.branchName,
+                              onChanged: (v) {
+                                controller.selectedBranch.value = v;
+                                if (v != null) controller.fetchHostels(v.id);
+                              },
                             ),
-                            child: ElevatedButton(
-                              onPressed: () {
-                                if (_formKey.currentState!.validate()) {
-                                  Get.snackbar(
-                                    "Success",
-                                    "Room Assigned",
-                                    snackPosition: SnackPosition.BOTTOM,
-                                    backgroundColor: Colors.green.withOpacity(
-                                      0.8,
-                                    ),
-                                    colorText: Colors.white,
-                                    margin: const EdgeInsets.all(15),
-                                  );
+
+                            _buildLabel("Building"),
+                            _buildGenericDropdown<HostelModel>(
+                              hint: "Select Building",
+                              value: controller.selectedHostel.value,
+                              items: controller.hostels,
+                              itemLabel: (h) => h.buildingName,
+                              onChanged: (v) {
+                                controller.selectedHostel.value = v;
+                                if (v != null)
+                                  controller.fetchInchargesAndFloors(v.id);
+                              },
+                            ),
+
+                            _buildLabel("Incharge"),
+                            _buildGenericDropdown<FloorInchargeModel>(
+                              hint: "Select Incharge",
+                              value: controller.selectedIncharge.value,
+                              items: controller.incharges,
+                              itemLabel: (i) => i.name,
+                              onChanged: (v) =>
+                                  controller.selectedIncharge.value = v,
+                            ),
+
+                            _buildLabel("Floor"),
+                            _buildGenericDropdown<FloorModel>(
+                              hint: "Select Floor",
+                              value: controller.selectedFloor.value,
+                              items: controller.floors,
+                              itemLabel: (f) => f.floorName,
+                              onChanged: (v) {
+                                controller.selectedFloor.value = v;
+                                if (v != null) controller.fetchRooms(v.id);
+                              },
+                            ),
+
+                            _buildLabel("Assign Rooms"),
+                            _buildGenericDropdown<RoomModel>(
+                              hint: controller.isRoomsLoading.value
+                                  ? "Loading rooms..."
+                                  : "Select Room",
+                              value: controller.selectedRooms.isNotEmpty
+                                  ? controller.selectedRooms.first
+                                  : null,
+                              items: controller.rooms,
+                              itemLabel: (r) => r.roomName,
+                              onChanged: (v) {
+                                if (v != null) {
+                                  controller.selectedRooms.clear();
+                                  controller.selectedRooms.add(v);
                                 }
                               },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.transparent,
-                                shadowColor: Colors.transparent,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15),
+                            ),
+
+                            const SizedBox(height: 25),
+
+                            // ================= ASSIGN ROOM BUTTON =================
+                            Container(
+                              width: double.infinity,
+                              height: 55,
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  colors: [
+                                    Color(0xFF7D74FC),
+                                    Color(0xFFD08EF7),
+                                  ],
+                                  begin: Alignment.centerLeft,
+                                  end: Alignment.centerRight,
                                 ),
+                                borderRadius: BorderRadius.circular(15),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.25),
+                                    blurRadius: 4,
+                                    offset: const Offset(0, 0),
+                                  ),
+                                ],
                               ),
-                              child: const Text(
-                                "Assign Room",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
+                              child: ElevatedButton(
+                                onPressed: controller.isSubmitting.value
+                                    ? null
+                                    : () => controller.assignRoom(),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.transparent,
+                                  shadowColor: Colors.transparent,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
                                 ),
+                                child: controller.isSubmitting.value
+                                    ? const CircularProgressIndicator(
+                                        color: Colors.white,
+                                      )
+                                    : const Text(
+                                        "Assign Room",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
+                          ],
+                        );
+                      }),
                     ),
                   ],
                 ),
@@ -183,11 +205,12 @@ class _AssignInchargePageState extends State<AssignInchargePage> {
     );
   }
 
-  Widget _buildDropdown({
+  Widget _buildGenericDropdown<T>({
     required String hint,
-    required String? value,
-    required List<String> items,
-    required void Function(String?)? onChanged,
+    required T? value,
+    required List<T> items,
+    required String Function(T) itemLabel,
+    required void Function(T?) onChanged,
   }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 15),
@@ -205,7 +228,7 @@ class _AssignInchargePageState extends State<AssignInchargePage> {
         ],
       ),
       child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
+        child: DropdownButton<T>(
           isExpanded: true,
           value: value,
           hint: Text(
@@ -214,46 +237,15 @@ class _AssignInchargePageState extends State<AssignInchargePage> {
           ),
           icon: const Icon(Icons.keyboard_arrow_down, color: Colors.black54),
           items: items.map((e) {
-            return DropdownMenuItem(
+            return DropdownMenuItem<T>(
               value: e,
               child: Text(
-                e,
+                itemLabel(e),
                 style: const TextStyle(fontSize: 14, color: Colors.black87),
               ),
             );
           }).toList(),
           onChanged: onChanged,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTextField({
-    required String hint,
-    required void Function(String)? onChanged,
-  }) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 15),
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.black.withOpacity(0.05)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.25),
-            blurRadius: 4,
-            offset: const Offset(0, 0),
-          ),
-        ],
-      ),
-      child: TextField(
-        onChanged: onChanged,
-        style: const TextStyle(fontSize: 14, color: Colors.black87),
-        decoration: InputDecoration(
-          hintText: hint,
-          hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
-          border: InputBorder.none,
         ),
       ),
     );

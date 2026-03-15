@@ -7,6 +7,9 @@ class RoomModel {
   final int branchId;
   final int incharge;
   final int status;
+  final String? branchName;
+  final String? floorName;
+  final String? hostelName;
 
   RoomModel({
     required this.id,
@@ -17,6 +20,9 @@ class RoomModel {
     required this.branchId,
     required this.incharge,
     required this.status,
+    this.branchName,
+    this.floorName,
+    this.hostelName,
   });
 
   factory RoomModel.fromJson(Map<String, dynamic> json) {
@@ -41,6 +47,9 @@ class RoomModel {
       status: json['status'] is int
           ? json['status']
           : int.parse(json['status'].toString()),
+      branchName: json['branch']?['branchname']?.toString(),
+      floorName: json['floor']?['floorname']?.toString(),
+      hostelName: json['hostel']?['buildingname']?.toString(),
     );
   }
 }

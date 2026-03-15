@@ -1,106 +1,156 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import '../widgets/staff_header.dart';
 
+import '../model/syllabus_model.dart';
+
 class SyllabusDetailsPage extends StatelessWidget {
-  const SyllabusDetailsPage({super.key});
+  final SyllabusModel syllabus;
+  const SyllabusDetailsPage({super.key, required this.syllabus});
 
   @override
   Widget build(BuildContext context) {
-    final Map<String, dynamic> args = Get.arguments ?? {};
-    final String subjectName = args['subjectName'] ?? 'N/A';
-    final String examName = args['examName'] ?? 'N/A';
-    final String batchName = args['batchName'] ?? 'N/A';
-    final String courseName = args['courseName'] ?? 'N/A';
-    final String branchName = args['branchName'] ?? 'N/A';
-    final String groupName = args['groupName'] ?? 'N/A';
-    final String syllabusContent = args['syllabusContent'] ?? '';
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: Column(
         children: [
-          /// STAFF HEADER
-          StaffHeader(
-            title: "Syllabus Details",
-            onBack: () => Get.back(),
-          ),
+          /// HEADER
+          const StaffHeader(title: "Syllabus Details"),
 
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  /// SUBJECT TITLE
-                  Text(
-                    subjectName.toUpperCase(),
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
+          const SizedBox(height: 20),
 
-                  const SizedBox(height: 12),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 18),
+            child: Container(
+              padding: const EdgeInsets.all(18),
+              decoration: BoxDecoration(
+                color: const Color(0xffE6DFF3),
+                borderRadius: BorderRadius.circular(25),
+              ),
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(18),
+                  boxShadow: const [
+                    BoxShadow(
+                      blurRadius: 6,
+                      color: Colors.black12,
+                      offset: Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    buildRow("Branch", syllabus.branchName ?? "N/A"),
+                    buildRow("Group", syllabus.groupName ?? "N/A"),
+                    buildRow("Course", syllabus.courseName ?? "N/A"),
+                    buildRow("Batch", syllabus.batchName ?? "N/A"),
+                    buildRow("Subject", syllabus.subjectName ?? "N/A"),
+                    buildRow("Chapter Name", syllabus.chapterName),
+                    buildRow("Expected Start Date", syllabus.expectedStartDate),
+                    buildRow(
+                      "Expected Accomplished Date",
+                      syllabus.expectedAccomplishedDate,
+                    ),
+                    buildRow(
+                      "Actual Start Date",
+                      syllabus.actualStartDate ?? "-",
+                    ),
+                    buildRow(
+                      "Actual Completion Date",
+                      syllabus.actualCompletedDate ?? "-",
+                    ),
 
-                  /// DETAILS CARD
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(15),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(15),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.10),
-                          blurRadius: 8,
-                          offset: const Offset(0, 3),
+                    const SizedBox(height: 8),
+
+                    /// PROGRESS
+                    Row(
+                      children: [
+                        const Text("Progress : "),
+
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: LinearProgressIndicator(
+                                value: syllabus.progressPercent / 100,
+                                minHeight: 6,
+                                backgroundColor: Colors.grey.shade300,
+                                valueColor: AlwaysStoppedAnimation(
+                                  syllabus.progressPercent < 50
+                                      ? Colors.red
+                                      : Colors.green,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        Text("${syllabus.progressPercent}%"),
+                      ],
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    /// TRACKING STATUS
+                    Row(
+                      children: [
+                        const Text("Tracking Status : "),
+
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: _getTrackingStatusColor(
+                              syllabus.trackingStatus,
+                            ),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            syllabus.trackingRemarks ?? "N/A",
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                            ),
+                          ),
                         ),
                       ],
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+
+                    const SizedBox(height: 10),
+
+                    /// STATUS
+                    Row(
                       children: [
-                        _buildRow("Exam Name", examName),
-                        const SizedBox(height: 8),
+                        const Text("Status : "),
 
-                        _buildRow("Batch/Course", "$batchName / $courseName"),
-                        const SizedBox(height: 8),
-
-                        _buildRow("Branch", branchName),
-                        const SizedBox(height: 8),
-
-                        _buildRow("Group", groupName),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: syllabus.status == 1
+                                ? Colors.green
+                                : Colors.red,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            syllabus.status == 1 ? "Active" : "Inactive",
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
                       ],
                     ),
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  /// SUBJECT SYLLABUS TITLE
-                  const Text(
-                    "Subject Syllabus",
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  /// SYLLABUS BOX
-                  Container(
-                    width: double.infinity,
-                    constraints: const BoxConstraints(minHeight: 140),
-                    padding: const EdgeInsets.all(15),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(15),
-                      border: Border.all(color: Colors.black12),
-                    ),
-                    child: Align(
-                      alignment: Alignment.topLeft,
-                      child: Text(
-                        syllabusContent.isEmpty ? "No syllabus content added yet." : syllabusContent,
-                        style: const TextStyle(color: Colors.black87),
-                      ),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -109,29 +159,31 @@ class SyllabusDetailsPage extends StatelessWidget {
     );
   }
 
-  /// DETAILS ROW
-  Widget _buildRow(String title, String value) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          width: 110,
-          child: Text(
-            "$title :",
+  Color _getTrackingStatusColor(int? status) {
+    switch (status) {
+      case 1:
+        return Colors.green;
+      case 2:
+        return Colors.orange;
+      case 3:
+        return Colors.red;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  Widget buildRow(String title, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Row(
+        children: [
+          Text(
+            "$title : ",
             style: const TextStyle(fontWeight: FontWeight.w500),
           ),
-        ),
-
-        Expanded(
-          child: Text(
-            value,
-            style: const TextStyle(
-              color: Color(0xFF0A66FF),
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ),
-      ],
+          Expanded(child: Text(value)),
+        ],
+      ),
     );
   }
 }

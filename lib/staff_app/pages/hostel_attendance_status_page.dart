@@ -57,6 +57,56 @@ class HostelAttendanceStatusPage extends StatelessWidget {
         children: [
           const StaffHeader(title: 'Hostel Attendance Status'),
 
+          // ── GLOBAL SUMMARY WIDGETS ────────────────────────────────
+          Obx(() {
+            if (hostelCtrl.isLoading.value && hostelCtrl.roomsSummary.isEmpty) {
+              return const SizedBox.shrink();
+            }
+
+            // Calculate totals
+            int totalStudents = 0;
+            int present = 0;
+            int outing = 0;
+            int homePass = 0;
+            int selfOuting = 0;
+            int selfHome = 0;
+            int missing = 0;
+            int notMarked = 0;
+
+            for (var row in hostelCtrl.roomsSummary) {
+              totalStudents += int.tryParse(row['total']?.toString() ?? '0') ?? 0;
+              present += int.tryParse(row['present']?.toString() ?? '0') ?? 0;
+              outing += int.tryParse(row['outing']?.toString() ?? '0') ?? 0;
+              homePass += int.tryParse(row['home_pass']?.toString() ?? '0') ?? 0;
+              selfOuting += int.tryParse(row['self_outing']?.toString() ?? '0') ?? 0;
+              selfHome += int.tryParse(row['self_home']?.toString() ?? '0') ?? 0;
+              missing += int.tryParse(row['missing']?.toString() ?? '0') ?? 0;
+              notMarked += int.tryParse(row['not_marked']?.toString() ?? '0') ?? 0;
+            }
+
+            return Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+              child: GridView.count(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                crossAxisCount: 4,
+                mainAxisSpacing: 8,
+                crossAxisSpacing: 8,
+                childAspectRatio: 1.3,
+                children: [
+                  _SummaryCard(label: "TOTAL STUDENTS", value: "$totalStudents", color: const Color(0xFF7C77D5)),
+                  _SummaryCard(label: "PRESENT", value: "$present", color: const Color(0xFF34B38A)),
+                  _SummaryCard(label: "OUTING", value: "$outing", color: const Color(0xFF4DAAF1)),
+                  _SummaryCard(label: "HOME PASS", value: "$homePass", color: const Color(0xFF777E97)),
+                  _SummaryCard(label: "SELF OUTING", value: "$selfOuting", color: const Color(0xFFFDB750)),
+                  _SummaryCard(label: "SELF HOME", value: "$selfHome", color: const Color(0xFF3B434E)),
+                  _SummaryCard(label: "MISSING", value: "$missing", color: const Color(0xFFFD5C63)),
+                  _SummaryCard(label: "NOT MARKED", value: "$notMarked", color: const Color(0xFFF0F0F0), textColor: Colors.black),
+                ],
+              ),
+            );
+          }),
+
           // ── FLOOR & INCHARGE HEADER ──────────────────────────────
           Obx(() {
             if (hostelCtrl.roomsSummary.isEmpty) return const SizedBox.shrink();
@@ -68,13 +118,13 @@ class HostelAttendanceStatusPage extends StatelessWidget {
             return Container(
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+              margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.10),
+                    color: Colors.black.withOpacity(0.05),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -83,44 +133,50 @@ class HostelAttendanceStatusPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      const Text(
-                        "Floor : ",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
+                  RichText(
+                    text: TextSpan(
+                      children: [
+                        const TextSpan(
+                          text: "Floor : ",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
                         ),
-                      ),
-                      Text(
-                        floor,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey,
+                        TextSpan(
+                          text: floor,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            color: Colors.grey,
+                            fontWeight: FontWeight.w400,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      const Text(
-                        "Incharge : ",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
+                  RichText(
+                    text: TextSpan(
+                      children: [
+                        const TextSpan(
+                          text: "Incharge : ",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
                         ),
-                      ),
-                      Text(
-                        incharge,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey,
+                        TextSpan(
+                          text: incharge,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            color: Colors.grey,
+                            fontWeight: FontWeight.w400,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -292,31 +348,28 @@ class _AttendanceStatusCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                 decoration: BoxDecoration(
                   color: notMarked < total
                       ? const Color(0xFF4ADE80) // Green
                       : const Color(0xFFF87171), // Red
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
                   room,
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
-                    fontSize: 14,
+                    fontSize: 15,
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 8),
-          Divider(height: 1, thickness: 1, color: Colors.grey.withOpacity(0.1)),
           const SizedBox(height: 12),
+          Divider(height: 1, thickness: 1, color: Colors.grey.withOpacity(0.08)),
+          const SizedBox(height: 14),
 
-          const SizedBox(height: 1),
-
-          const SizedBox(height: 1),
 
           // Metrics Grid (Exact color calibration from image)
           Row(
@@ -401,11 +454,11 @@ class _MetricBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: Container(
-        height: 52,
+        height: 58,
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: color.withOpacity(0.6), width: 1.2),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: color.withOpacity(0.35), width: 1.5),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -415,20 +468,68 @@ class _MetricBox extends StatelessWidget {
               style: TextStyle(
                 color: color,
                 fontWeight: FontWeight.bold,
-                fontSize: 18,
+                fontSize: 20,
               ),
             ),
-            const SizedBox(height: 2),
+            const SizedBox(height: 1),
             Text(
-              label,
+              label.toUpperCase(),
               style: TextStyle(
                 color: color,
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
+                fontSize: 9,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 0.2,
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _SummaryCard extends StatelessWidget {
+  final String label;
+  final String value;
+  final Color color;
+  final Color textColor;
+
+  const _SummaryCard({
+    required this.label,
+    required this.value,
+    required this.color,
+    this.textColor = Colors.white,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(4),
+      ),
+      padding: const EdgeInsets.all(6),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              color: textColor.withOpacity(0.8),
+              fontSize: 8.5,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Text(
+            value,
+            style: TextStyle(
+              color: textColor,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
       ),
     );
   }

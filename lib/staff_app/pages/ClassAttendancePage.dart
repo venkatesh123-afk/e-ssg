@@ -198,27 +198,61 @@ class _ClassAttendancePageState extends State<ClassAttendancePage> {
         // ================= STAT SUMMARY CARDS =================
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Row(
+          child: GridView.count(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisCount: 3,
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
+            childAspectRatio: 1.2, // Increased to make cards shorter
             children: [
               _buildStatSummaryCard(
                 "Total",
-                "${controller.attendanceList.length}",
+                "${controller.totalCount}",
                 const Color(0xFFF5F3FF),
                 const Color(0xFF7E49FF),
               ),
-              const SizedBox(width: 10),
               _buildStatSummaryCard(
-                "Total", // Present count in image shows 'Total' label but green value
+                "Present",
                 "${controller.presentCount}",
                 const Color(0xFFECFDF5),
                 const Color(0xFF10B981),
               ),
-              const SizedBox(width: 10),
               _buildStatSummaryCard(
                 "Absent",
                 "${controller.absentCount}",
                 const Color(0xFFFEF2F2),
                 const Color(0xFFEF4444),
+              ),
+              _buildStatSummaryCard(
+                "Missing",
+                "${controller.missingCount}",
+                const Color(0xFFFFF7ED),
+                const Color(0xFFF97316),
+              ),
+              _buildStatSummaryCard(
+                "Outing",
+                "${controller.outingCount}",
+                const Color(0xFFECFEFF),
+                const Color(0xFF06B6D4),
+              ),
+              _buildStatSummaryCard(
+                "Home Pass",
+                "${controller.homePassCount}",
+                const Color(0xFFFFFBEB),
+                const Color(0xFFF59E0B),
+              ),
+              _buildStatSummaryCard(
+                "Self Outing",
+                "${controller.selfOutingCount}",
+                const Color(0xFFFAF5FF),
+                const Color(0xFFA855F7),
+              ),
+              _buildStatSummaryCard(
+                "Self Home",
+                "${controller.selfHomeCount}",
+                const Color(0xFFFDF2F8),
+                const Color(0xFFEC4899),
               ),
             ],
           ),
@@ -327,9 +361,12 @@ class _ClassAttendancePageState extends State<ClassAttendancePage> {
                         case 'H':
                           bgColor = Colors.amber;
                           break;
-                        case 'S':
-                          bgColor = Colors.deepPurple;
-                          break; // Covers SO/SH if using 'S'
+                        case 'SO':
+                          bgColor = const Color(0xFFA855F7);
+                          break;
+                        case 'SH':
+                          bgColor = const Color(0xFFEC4899);
+                          break;
                         default:
                           bgColor = const Color(0xFF67B56B);
                       }
@@ -346,8 +383,8 @@ class _ClassAttendancePageState extends State<ClassAttendancePage> {
                           _buildPopupItem("Missing", "M"),
                           _buildPopupItem("Outing", "O"),
                           _buildPopupItem("Home Pass", "H"),
-                          _buildPopupItem("Self Outing", "S"),
-                          _buildPopupItem("Self Home", "S"),
+                          _buildPopupItem("Self Outing", "SO"),
+                          _buildPopupItem("Self Home", "SH"),
                           _buildPopupItem("Absent", "A"),
                         ],
                         child: Container(
@@ -386,42 +423,40 @@ class _ClassAttendancePageState extends State<ClassAttendancePage> {
     Color bgColor,
     Color textColor,
   ) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: bgColor, width: 2),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.25),
-              blurRadius: 4,
-              offset: const Offset(0, 0),
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: bgColor, width: 1.2),
+        boxShadow: [
+          BoxShadow(
+            color: textColor.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: textColor,
             ),
-          ],
-        ),
-        child: Column(
-          children: [
-            Text(
-              value,
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: textColor,
-              ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w500,
+              color: textColor.withOpacity(0.7),
             ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-                color: textColor.withOpacity(0.7),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

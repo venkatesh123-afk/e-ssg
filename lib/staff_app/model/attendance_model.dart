@@ -1,8 +1,13 @@
 class AttendanceResponse {
   final bool success;
   final List<StudentAttendance> indexdata;
+  final List<dynamic> outingData;
 
-  AttendanceResponse({required this.success, required this.indexdata});
+  AttendanceResponse({
+    required this.success,
+    required this.indexdata,
+    required this.outingData,
+  });
 
   factory AttendanceResponse.fromJson(Map<String, dynamic> json) {
     final successValue = json['success'];
@@ -11,6 +16,8 @@ class AttendanceResponse {
 
     final List<dynamic>? listData =
         (json['indexdata'] ?? json['attendanceData']) as List<dynamic>?;
+
+    final List<dynamic> outingList = (json['outingData'] as List<dynamic>?) ?? [];
 
     return AttendanceResponse(
       success: isSuccess,
@@ -21,6 +28,7 @@ class AttendanceResponse {
               )
               .toList() ??
           [],
+      outingData: outingList,
     );
   }
 
@@ -28,6 +36,7 @@ class AttendanceResponse {
     return {
       'success': success,
       'indexdata': indexdata.map((e) => e.toJson()).toList(),
+      'outingData': outingData,
     };
   }
 }
@@ -69,11 +78,14 @@ class StudentAttendance {
   final String threezero;
   final String threeone;
 
+  final String phone;
+
   StudentAttendance({
     required this.sid,
     required this.sfname,
     required this.slname,
     required this.admno,
+    required this.phone,
     required this.one,
     required this.two,
     required this.three,
@@ -136,6 +148,7 @@ class StudentAttendance {
       sfname: firstName,
       slname: lastName,
       admno: (json['admno'] ?? '').toString(),
+      phone: (json['phone'] ?? '').toString(),
       one: json['one'] ?? '',
       two: json['two'] ?? '',
       three: json['three'] ?? '',
@@ -176,6 +189,7 @@ class StudentAttendance {
       'sfname': sfname,
       'slname': slname,
       'admno': admno,
+      'phone': phone,
       'one': one,
       'two': two,
       'three': three,

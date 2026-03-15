@@ -12,6 +12,11 @@ import '../model/pro_dashboard_model.dart';
 import '../model/pro_mom_model.dart';
 import '../model/pro_yoy_model.dart';
 import '../model/pro_admissions_chart_model.dart';
+import '../model/admin_dashboard_admissions_model.dart';
+import '../model/admin_dashboard_finance_model.dart';
+import '../model/admin_dashboard_attendance_model.dart';
+import '../model/admin_dashboard_staff_model.dart';
+import '../model/syllabus_model.dart';
 import '../utils/get_storage.dart';
 
 class ApiService {
@@ -329,7 +334,9 @@ class ApiService {
     final Set<String> seenAdmnos = {};
 
     void addResult(Map<String, dynamic> student) {
-      final admno = (student['admno'] ?? student['adm_no'] ?? student['admission_no'])?.toString();
+      final admno =
+          (student['admno'] ?? student['adm_no'] ?? student['admission_no'])
+              ?.toString();
       if (admno != null && !seenAdmnos.contains(admno)) {
         seenAdmnos.add(admno);
         results.add(student);
@@ -355,7 +362,8 @@ class ApiService {
           'admno': o['admno'],
           'sid': o['sid'],
           'sfname': o['student_name'] ?? o['studentname'] ?? o['sname'],
-          'slname': '', // Outing search usually provides full name in student_name
+          'slname':
+              '', // Outing search usually provides full name in student_name
           'branch_name': o['branch'],
           'status': 'ACTIVE', // Fallback status
         });
@@ -600,7 +608,9 @@ class ApiService {
 
   // ================= APPROVE OUTING =================
   static Future<void> approveOuting(int outingId, {String? phone}) async {
-    final res = await getRequest(ApiCollection.approveOuting(outingId, phone: phone));
+    final res = await getRequest(
+      ApiCollection.approveOuting(outingId, phone: phone),
+    );
 
     final bool isSuccess =
         res["success"] == true ||
@@ -667,7 +677,7 @@ class ApiService {
   }
 
   // ================= ADD HOSTEL MEMBER =================
-  static Future<void> addHostelMember({
+  static Future<String> addHostelMember({
     required String sid,
     required String branch,
     required String hostel,
@@ -720,10 +730,11 @@ class ApiService {
             "Failed to add hostel member",
       );
     }
+    return decoded["indexdata"]?.toString() ?? "Member added successfully";
   }
 
   // ================= EDIT HOSTEL MEMBER =================
-  static Future<void> editHostelMember({
+  static Future<String> editHostelMember({
     required String sid,
     required String branch,
     required String hostel,
@@ -776,48 +787,24 @@ class ApiService {
             "Failed to update hostel member",
       );
     }
+    return decoded["indexdata"]?.toString() ?? "Member updated successfully";
   }
 
   // ================= DELETE HOSTEL MEMBER =================
-  static Future<void> deleteHostelMember({required String sid}) async {
-    final String? token = _box.read<String>("token");
+  static Future<String> deleteHostelMember({required String sid}) async {
+    final res = await getRequest(ApiCollection.deleteHostelMember(sid));
 
-    if (token == null || token.isEmpty) {
-      throw Exception("Session expired. Please login again.");
-    }
-
-    final Uri url = Uri.parse(
-      ApiCollection.baseUrl + ApiCollection.deleteHostelMember,
-    );
-
-    final Map<String, dynamic> body = {"sid": sid};
-
-    debugPrint("DELETE HOSTEL MEMBER REQUEST: $body");
-
-    final response = await http
-        .post(url, headers: _authHeaders(token), body: jsonEncode(body))
-        .timeout(const Duration(seconds: 20));
-
-    debugPrint("DELETE HOSTEL MEMBER RESPONSE: ${response.body}");
-
-    if (response.statusCode != 200) {
-      throw Exception("Server error: ${response.statusCode}");
-    }
-
-    final decoded = jsonDecode(response.body);
+    debugPrint("DELETE HOSTEL MEMBER RESPONSE: $res");
 
     final isSuccess =
-        decoded["success"] == true ||
-        decoded["success"] == "true" ||
-        decoded["success"] == 1;
+        res["success"] == true || res["success"] == "true" || res["success"] == 1;
 
     if (!isSuccess) {
       throw Exception(
-        decoded["indexdata"] ??
-            decoded["message"] ??
-            "Failed to delete hostel member",
+        res["indexdata"] ?? res["message"] ?? "Failed to delete hostel member",
       );
     }
+    return res["indexdata"]?.toString() ?? "Member removed successfully";
   }
 
   // ================= HOSTEL MEMBERS LIST =================
@@ -1221,7 +1208,7 @@ class ApiService {
     required int hostelId,
     required int staffId,
     required int floorId,
-    required String rooms,
+    required dynamic rooms,
   }) async {
     final String? token = _box.read<String>("token");
 
@@ -1446,15 +1433,176 @@ class ApiService {
     throw Exception("Failed to load pro admissions chart data");
   }
 
-  static Future<Map<String, dynamic>> getDashboardAttendance() async {
+  static Future<AdminDashboardAttendanceModel> getDashboardAttendance() async {
     final res = await getRequest(ApiCollection.dashboardMain("attendance"));
 
     if (res["success"] == true ||
         res["success"] == "true" ||
         res["success"] == 1) {
-      return Map<String, dynamic>.from(res);
+      return AdminDashboardAttendanceModel.fromJson(res);
     }
 
     throw Exception(res["message"] ?? "Failed to load dashboard data");
+  }
+
+  static Future<AdminDashboardAdmissionsModel>
+  getAdminDashboardAdmissions() async {
+    final res = await getRequest(ApiCollection.dashboardMain("admissions"));
+
+    if (res["success"] == true ||
+        res["success"] == "true" ||
+        res["success"] == 1) {
+      return AdminDashboardAdmissionsModel.fromJson(res);
+    }
+
+    throw Exception(
+      res["message"] ?? "Failed to load dashboard admissions data",
+    );
+  }
+
+  static Future<AdminDashboardFinanceModel> getAdminDashboardFinance() async {
+    final res = await getRequest(ApiCollection.dashboardMain("finance"));
+
+    if (res["success"] == true ||
+        res["success"] == "true" ||
+        res["success"] == 1) {
+      return AdminDashboardFinanceModel.fromJson(res);
+    }
+
+    throw Exception(res["message"] ?? "Failed to load dashboard finance data");
+  }
+
+  static Future<AdminDashboardStaffModel> getAdminDashboardStaff() async {
+    final res = await getRequest(ApiCollection.dashboardMain("staff"));
+
+    if (res["success"] == true ||
+        res["success"] == "true" ||
+        res["success"] == 1) {
+      return AdminDashboardStaffModel.fromJson(res);
+    }
+
+    throw Exception(res["message"] ?? "Failed to load dashboard staff data");
+  }
+
+  // ================= HOMEWORK =================
+  static Future<void> saveHomework({
+    required int sid,
+    required String title,
+    required int branchId,
+    required int groupId,
+    required int courseId,
+    required int batchId,
+    required int subjectId,
+    required String description,
+  }) async {
+    final body = {
+      "sid": [sid],
+      "title": title,
+      "branch_id": branchId,
+      "group_id": groupId,
+      "course_id": courseId,
+      "batch_id": batchId,
+      "subject_id": subjectId,
+      "description": description,
+    };
+
+    final res = await postRequest(ApiCollection.storeHomework, body: body);
+
+    final success =
+        res['success'] == true || res['success'] == "true" || res['success'] == 1;
+
+    if (!success) {
+      throw Exception(res['message'] ?? "Failed to save homework");
+    }
+  }
+
+  // ================= SYLLABUS =================
+  static Future<SyllabusModel> getSyllabusDetails(int id) async {
+    final res = await getRequest(ApiCollection.showAcademicSyllabus(id));
+
+    if ((res["success"] == true || res["success"] == "true" || res["success"] == 1) &&
+        res["indexdata"] != null) {
+      return SyllabusModel.fromMap(Map<String, dynamic>.from(res["indexdata"]));
+    }
+
+    throw Exception(res["message"] ?? "Failed to load syllabus details");
+  }
+
+  static Future<void> updateSyllabusProgress({
+    required int id,
+    required String? actualStartDate,
+    required String? actualCompletedDate,
+    required double progressPercent,
+    required int trackingStatus,
+    required String trackingRemarks,
+  }) async {
+    final Map<String, dynamic> body = {
+      "actual_start_date": actualStartDate,
+      "actual_completed_date": actualCompletedDate,
+      "progress_percent": progressPercent.toInt(),
+      "tracking_status": trackingStatus,
+      "tracking_remarks": trackingRemarks,
+    };
+
+    final res = await postRequest(
+      ApiCollection.updateAcademicSyllabusProgress(id),
+      body: body,
+    );
+
+    final bool isSuccess =
+        res["success"] == true || res["success"] == "true" || res["success"] == 1;
+
+    if (!isSuccess) {
+      throw Exception(res["message"] ?? "Failed to update syllabus progress");
+    }
+  }
+
+  static Future<void> updateAcademicSyllabus({
+    required int id,
+    required String chapterName,
+    required String expectedStartDate,
+    required String expectedAccomplishedDate,
+    required int status,
+    int? branchId,
+    int? groupId,
+    int? courseId,
+    int? batchId,
+    int? subjectId,
+  }) async {
+    final Map<String, dynamic> body = {
+      "chapter_name": chapterName,
+      "expected_start_date": expectedStartDate,
+      "expected_accomplished_date": expectedAccomplishedDate,
+      "status": status,
+    };
+
+    if (branchId != null) body["branch_id"] = branchId;
+    if (groupId != null) body["group_id"] = groupId;
+    if (courseId != null) body["course_id"] = courseId;
+    if (batchId != null) body["batch_id"] = batchId;
+    if (subjectId != null) body["subject_id"] = subjectId;
+
+    final res = await postRequest(
+      ApiCollection.updateAcademicSyllabus(id),
+      body: body,
+    );
+
+    final bool isSuccess =
+        res["success"] == true || res["success"] == "true" || res["success"] == 1;
+
+    if (!isSuccess) {
+      throw Exception(res["message"] ?? "Failed to update syllabus");
+    }
+  }
+
+  static Future<List<Map<String, dynamic>>> getSubjectsByBatch(int batchId) async {
+    final res = await getRequest(ApiCollection.subjectsByBatch(batchId));
+    final success = res['success'] == true || res['success'] == "true" || res['success'] == 1;
+    final dynamic rawData = res['indexdata'] ?? res['data'] ?? res['subjects'];
+
+    if (success && rawData != null && rawData is List) {
+      return List<Map<String, dynamic>>.from(rawData);
+    }
+    return [];
   }
 }

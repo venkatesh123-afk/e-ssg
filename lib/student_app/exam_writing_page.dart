@@ -429,12 +429,10 @@ class _ExamWritingPageState extends State<ExamWritingPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Column(
-                              crossAxisAlignment:
-                                  CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   "Question ${_currentQuestionIndex + 1} of ${_questions.length}",
@@ -551,8 +549,7 @@ class _ExamWritingPageState extends State<ExamWritingPage> {
                         label: const Text("Previous"),
                       ),
                       ElevatedButton(
-                        onPressed: () =>
-                            _saveCurrentAnswer(isReview: true),
+                        onPressed: () => _saveCurrentAnswer(isReview: true),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.orange,
                           foregroundColor: Colors.white,
@@ -593,12 +590,10 @@ class _ExamWritingPageState extends State<ExamWritingPage> {
     return html.replaceAll(RegExp(r'<[^>]*>'), '').trim();
   }
 
-  Widget _buildOption(
-    int index,
-    dynamic content,
-  ) {
-    if (content == null || content.toString().trim().isEmpty)
+  Widget _buildOption(int index, dynamic content) {
+    if (content == null || content.toString().trim().isEmpty) {
       return const SizedBox.shrink();
+    }
 
     final isSelected = _answerController.text == index.toString();
     final strippedContent = _stripHtml(content.toString());
@@ -647,7 +642,7 @@ class _ExamWritingPageState extends State<ExamWritingPage> {
               Expanded(
                 child: Text(
                   strippedContent,
-                   style: TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     color: isSelected
                         ? Colors.blue.shade900

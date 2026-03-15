@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../widgets/staff_header.dart';
 import 'admin_add_syllabus_page.dart';
+import 'edit_syllabus_page.dart';
+import 'syllabus_details_page.dart';
+import 'track_syllabus_progress_page.dart';
 import '../controllers/syllabus_controller.dart';
 import '../model/syllabus_model.dart';
 import '../widgets/skeleton.dart';
@@ -217,27 +220,26 @@ class _AdminSyllabusPageState extends State<AdminSyllabusPage> {
           
           Row(
             children: [
-              const Text("Actions : ", style: TextStyle(color: Colors.black87, fontSize: 13, fontWeight: FontWeight.w500)),
+              const Text("Actions : ", style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold)),
+              const SizedBox(width: 8),
+              
+              // Edit Icon
               GestureDetector(
                 onTap: () {
-                  Get.snackbar(
-                    "Update",
-                    "Update chapter: ${item.chapterName}",
-                    snackPosition: SnackPosition.BOTTOM,
-                    backgroundColor: Colors.orange.shade100,
-                    colorText: Colors.orange.shade900,
-                  );
+                  Get.to(() => EditSyllabusPage(syllabus: item));
                 },
                 child: Container(
-                  padding: const EdgeInsets.all(6),
+                  padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     color: const Color(0xFFFFF3E0),
-                    borderRadius: BorderRadius.circular(4),
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Icon(Icons.edit_outlined, color: Colors.orange, size: 18),
+                  child: const Icon(Icons.edit_outlined, color: Colors.orange, size: 22),
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 12),
+              
+              // Delete Icon
               GestureDetector(
                 onTap: () {
                   Get.snackbar(
@@ -249,12 +251,44 @@ class _AdminSyllabusPageState extends State<AdminSyllabusPage> {
                   );
                 },
                 child: Container(
-                  padding: const EdgeInsets.all(6),
+                  padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     color: const Color(0xFFFFEBEE),
-                    borderRadius: BorderRadius.circular(4),
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Icon(Icons.delete_outline, color: Colors.red, size: 18),
+                  child: const Icon(Icons.delete_outline, color: Colors.red, size: 22),
+                ),
+              ),
+              const SizedBox(width: 12),
+
+              // View Icon
+              GestureDetector(
+                onTap: () {
+                  Get.to(() => SyllabusDetailsPage(syllabus: item));
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE8EAF6),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(Icons.visibility, color: Color(0xFF0D47A1), size: 22),
+                ),
+              ),
+              const SizedBox(width: 12),
+
+              // Stats Icon
+              GestureDetector(
+                onTap: () {
+                  Get.to(() => TrackSyllabusProgressPage(syllabus: item));
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE3F2FD),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(Icons.trending_up, color: Color(0xFF1976D2), size: 22),
                 ),
               ),
             ],

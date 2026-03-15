@@ -140,10 +140,7 @@ class _AnswerKeyDialogState extends State<AnswerKeyDialog>
                       onTap: () => Navigator.pop(context),
                       child: Padding(
                         padding: const EdgeInsets.all(6),
-                        child: Icon(
-                          Icons.close,
-                          color: secondaryTextColor,
-                        ),
+                        child: Icon(Icons.close, color: secondaryTextColor),
                       ),
                     ),
                   ],
@@ -153,9 +150,7 @@ class _AnswerKeyDialogState extends State<AnswerKeyDialog>
               /// TABS
               Container(
                 decoration: const BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(color: borderColor),
-                  ),
+                  border: Border(bottom: BorderSide(color: borderColor)),
                 ),
                 child: TabBar(
                   controller: _tabController,
@@ -223,7 +218,7 @@ class _AnswerKeyDialogState extends State<AnswerKeyDialog>
                 child: Column(
                   children: [
                     _buildTableHeader(headerBgColor),
-                    ...questions.map((q) => _buildTableRow(q)).toList(),
+                    ...questions.map((q) => _buildTableRow(q)),
                   ],
                 ),
               ),
@@ -244,14 +239,40 @@ class _AnswerKeyDialogState extends State<AnswerKeyDialog>
       ),
       child: const Row(
         children: [
-          SizedBox(width: 80, child: Text("Q.No", style: TextStyle(fontWeight: FontWeight.bold))),
-          SizedBox(width: 150, child: Text("Type", style: TextStyle(fontWeight: FontWeight.bold))),
-          Expanded(child: Text("Your Answer", style: TextStyle(fontWeight: FontWeight.bold))),
-          Expanded(child: Text("Correct Answer", style: TextStyle(fontWeight: FontWeight.bold))),
-          SizedBox(width: 120, child: Text("Result", style: TextStyle(fontWeight: FontWeight.bold))),
+          SizedBox(
+            width: 80,
+            child: Text("Q.No", style: TextStyle(fontWeight: FontWeight.bold)),
+          ),
+          SizedBox(
+            width: 150,
+            child: Text("Type", style: TextStyle(fontWeight: FontWeight.bold)),
+          ),
+          Expanded(
+            child: Text(
+              "Your Answer",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              "Correct Answer",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+          SizedBox(
+            width: 120,
+            child: Text(
+              "Result",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
           SizedBox(
             width: 100,
-            child: Text("Marks", textAlign: TextAlign.right, style: TextStyle(fontWeight: FontWeight.bold)),
+            child: Text(
+              "Marks",
+              textAlign: TextAlign.right,
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
           ),
         ],
       ),
@@ -268,9 +289,7 @@ class _AnswerKeyDialogState extends State<AnswerKeyDialog>
       padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
       decoration: BoxDecoration(
         color: rowColor,
-        border: const Border(
-          bottom: BorderSide(color: Color(0xFFF1F5F9)),
-        ),
+        border: const Border(bottom: BorderSide(color: Color(0xFFF1F5F9))),
       ),
       child: Row(
         children: [
@@ -283,7 +302,9 @@ class _AnswerKeyDialogState extends State<AnswerKeyDialog>
             child: Text(
               isCorrect ? "Correct" : "Wrong",
               style: TextStyle(
-                color: isCorrect ? const Color(0xFF22C55E) : const Color(0xFFEF4444),
+                color: isCorrect
+                    ? const Color(0xFF22C55E)
+                    : const Color(0xFFEF4444),
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -304,10 +325,7 @@ class _AnswerKeyDialogState extends State<AnswerKeyDialog>
         children: [
           Icon(Icons.inbox_outlined, size: 64, color: Colors.grey.shade400),
           const SizedBox(height: 16),
-          const Text(
-            "No data",
-            style: TextStyle(color: Colors.grey),
-          ),
+          const Text("No data", style: TextStyle(color: Colors.grey)),
         ],
       ),
     );

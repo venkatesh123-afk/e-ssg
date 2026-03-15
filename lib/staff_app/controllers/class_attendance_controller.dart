@@ -417,15 +417,11 @@ class ClassAttendanceController extends GetxController {
       attendanceList.clear();
       attendanceStatus.clear();
 
-      final String dateStr = selectedDate.value
-          .toString()
-          .split(' ')
-          .first; // YYYY-MM-DD
-
       final res = await ApiService.getRequest(
         ApiCollection.getStudentsAttendanceList(
-          shiftId: shiftCtrl?.selectedShift.value?.id ?? 0,
-          date: dateStr,
+          branchId: branchCtrl?.selectedBranch.value?.id ?? 0,
+          groupId: groupCtrl?.selectedGroup.value?.id ?? 0,
+          courseId: courseCtrl?.selectedCourse.value?.id ?? 0,
           batchId: batchCtrl?.selectedBatch.value?.id ?? 0,
         ),
       );
@@ -453,6 +449,18 @@ class ClassAttendanceController extends GetxController {
         final attendanceResponse = AttendanceResponse.fromJson(res);
         attendanceList.assignAll(attendanceResponse.indexdata);
 
+        // ✅ Map outingData for quick lookup
+        final Map<int, String> outingMap = {};
+        for (var o in attendanceResponse.outingData) {
+          if (o is Map && o['sid'] != null) {
+            final sid = int.tryParse(o['sid'].toString()) ?? 0;
+            final type = (o['outingtype'] ?? '').toString();
+            if (sid != 0) {
+              outingMap[sid] = _mapOutingType(type);
+            }
+          }
+        }
+
         // ✅ Set initial status based on the selected day
         final int currentDay = selectedDate.value.day;
         bool anyFound = false;
@@ -464,6 +472,8 @@ class ClassAttendanceController extends GetxController {
           if (statusForToday.isNotEmpty) {
             attendanceStatus[i] = statusForToday;
             anyFound = true;
+          } else if (outingMap.containsKey(student.sid)) {
+            attendanceStatus[i] = outingMap[student.sid]!;
           } else {
             // Default to Present if no record exists
             attendanceStatus[i] = 'P';
@@ -490,18 +500,53 @@ class ClassAttendanceController extends GetxController {
     }
   }
 
+  String _mapOutingType(String type) {
+    switch (type.toLowerCase()) {
+      case 'home pass':
+        return 'H';
+      case 'outing':
+        return 'O';
+      case 'missing':
+        return 'M';
+      case 'self outing':
+        return 'SO'; // Distinguished
+      case 'self home':
+        return 'SH'; // Distinguished
+      default:
+        return 'O'; // Default to O for other outing types
+    }
+  }
+
   void updateStatus(int index, String status) {
     attendanceStatus[index] = status;
   }
 
   void markAllPresent() {
     for (int i = 0; i < attendanceList.length; i++) {
+      final currentStatus = attendanceStatus[i] ?? 'P';
+      // Skip if student is on outing (H, O, SO, SH, M)
+      if (currentStatus == 'H' ||
+          currentStatus == 'O' ||
+          currentStatus == 'SO' ||
+          currentStatus == 'SH' ||
+          currentStatus == 'M') {
+        continue;
+      }
       attendanceStatus[i] = 'P';
     }
   }
 
   void markAllAbsent() {
     for (int i = 0; i < attendanceList.length; i++) {
+      final currentStatus = attendanceStatus[i] ?? 'P';
+      // Skip if student is on outing (H, O, SO, SH, M)
+      if (currentStatus == 'H' ||
+          currentStatus == 'O' ||
+          currentStatus == 'SO' ||
+          currentStatus == 'SH' ||
+          currentStatus == 'M') {
+        continue;
+      }
       attendanceStatus[i] = 'A';
     }
   }
@@ -535,7 +580,12 @@ class ClassAttendanceController extends GetxController {
     final statusList = <String>[];
     for (int i = 0; i < attendanceList.length; i++) {
       sidList.add(attendanceList[i].sid);
-      statusList.add(attendanceStatus[i] ?? 'P');
+      String status = attendanceStatus[i] ?? 'P';
+      // Map SO and SH back to 'S' for backend if needed
+      if (status == 'SO' || status == 'SH') {
+        status = 'S';
+      }
+      statusList.add(status);
     }
 
     try {
@@ -581,6 +631,11 @@ class ClassAttendanceController extends GetxController {
             total: attendanceList.length,
             present: presentCount,
             absent: absentCount,
+            missing: missingCount,
+            outing: outingCount,
+            homePass: homePassCount,
+            selfOuting: selfOutingCount,
+            selfHome: selfHomeCount,
             onConfirm: () {
               Get.back(); // close dialog
               isSubmitted.value = true;
@@ -625,9 +680,23 @@ class ClassAttendanceController extends GetxController {
 
   // ================= HELPERS =================
 
+  int get totalCount => attendanceList.length;
+
   int get presentCount => attendanceStatus.values.where((v) => v == 'P').length;
 
   int get absentCount => attendanceStatus.values.where((v) => v == 'A').length;
+
+  int get missingCount => attendanceStatus.values.where((v) => v == 'M').length;
+
+  int get outingCount => attendanceStatus.values.where((v) => v == 'O').length;
+
+  int get homePassCount => attendanceStatus.values.where((v) => v == 'H').length;
+
+  int get selfOutingCount =>
+      attendanceStatus.values.where((v) => v == 'SO').length;
+
+  int get selfHomeCount =>
+      attendanceStatus.values.where((v) => v == 'SH').length;
 
   // ================= CLEAR =================
   void clear() {

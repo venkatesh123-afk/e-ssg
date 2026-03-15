@@ -24,13 +24,15 @@ class _MarksPageState extends State<MarksPage> {
       drawer: const StudentDrawerPage(),
       body: Column(
         children: [
-          Builder(builder: (context) {
-            return StudentAppHeader(
-              title: "Marks",
-              leadIcon: Icons.menu,
-              onLeadTap: () => Scaffold.of(context).openDrawer(),
-            );
-          }),
+          Builder(
+            builder: (context) {
+              return StudentAppHeader(
+                title: "Marks",
+                leadIcon: Icons.menu,
+                onLeadTap: () => Scaffold.of(context).openDrawer(),
+              );
+            },
+          ),
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
@@ -722,7 +724,7 @@ class _MarksPageState extends State<MarksPage> {
                     color: Colors.black,
                   ),
                 ),
-                if (action != null) action,
+                ?action,
               ],
             ),
           ),

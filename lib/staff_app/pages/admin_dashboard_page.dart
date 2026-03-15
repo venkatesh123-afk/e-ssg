@@ -9,7 +9,9 @@ import 'admin_student_search_page.dart';
 import '../utils/iconify_icons.dart';
 
 import 'admin_syllabus_page.dart';
-
+import '../controllers/admin_dashboard_controller.dart';
+import '../model/admin_dashboard_finance_model.dart';
+import '../model/admin_dashboard_attendance_model.dart';
 
 class AdminDashboardPage extends StatefulWidget {
   const AdminDashboardPage({super.key});
@@ -20,20 +22,12 @@ class AdminDashboardPage extends StatefulWidget {
 
 class _AdminDashboardPageState extends State<AdminDashboardPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final AdminDashboardController controller = Get.put(
+    AdminDashboardController(),
+  );
   String _activeTab = "Admissions";
-
-  static const List<Map<String, dynamic>> branchData = [
-    {"name": "SSJC-ADARSA CAMPUS", "count": 1063},
-    {"name": "SSJC-VICTORY CAMPUS", "count": 324},
-    {"name": "SSJC-BN GIRLS", "count": 506},
-    {"name": "SSJC-BN BOYS", "count": 645},
-    {"name": "SSJC-VRB CAMPUS", "count": 541},
-    {"name": "SSJC-PVB CAMPUS", "count": 254},
-    {"name": "SSJC-VIDHYA BHAVAN", "count": 1211},
-    {"name": "SSJC-SSG EAMCET CAMPUS", "count": 478},
-    {"name": "SSHS-TALLUR", "count": 1248},
-    {"name": "SSJC-SSG NEET&MAINS CAMPUS", "count": 599},
-  ];
+  String _activeFeeTab = "Todays";
+  String _activeExpenseTab = "Todays";
 
   @override
   Widget build(BuildContext context) {
@@ -147,7 +141,10 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                         "Admissions",
                         _activeTab == "Admissions",
                         icon: Icons.person_outline,
-                        onTap: () => setState(() => _activeTab = "Admissions"),
+                        onTap: () {
+                          setState(() => _activeTab = "Admissions");
+                          controller.fetchAdmissionsData();
+                        },
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -156,7 +153,10 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                         "Finance",
                         _activeTab == "Finance",
                         icon: Icons.account_balance_wallet_outlined,
-                        onTap: () => setState(() => _activeTab = "Finance"),
+                        onTap: () {
+                          setState(() => _activeTab = "Finance");
+                          controller.fetchFinanceData();
+                        },
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -165,7 +165,10 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                         "Attendance",
                         _activeTab == "Attendance",
                         icon: Icons.person_add_alt_1_outlined,
-                        onTap: () => setState(() => _activeTab = "Attendance"),
+                        onTap: () {
+                          setState(() => _activeTab = "Attendance");
+                          controller.fetchAttendanceData();
+                        },
                       ),
                     ),
                   ],
@@ -174,6 +177,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                 if (_activeTab == "Admissions") _buildAdmissionsBody(),
                 if (_activeTab == "Attendance") _buildAttendanceBody(),
                 if (_activeTab == "Finance") _buildFinanceBody(),
+
                 const SizedBox(height: 30),
               ],
             ),
@@ -185,131 +189,200 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   }
 
   Widget _buildAdmissionsBody() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Statistics Grid
-        _buildStatsGrid(),
-        const SizedBox(height: 25),
-        // Charts Section
-        _buildChartCard(
-          "Total Strength Male/Female",
-          _buildDonutChart(
-            sections: [
-              PieChartSectionData(
-                value: 41.8,
-                color: const Color(0xFF5C6BC0),
-                title: '41.8%',
-                radius: 20,
-                showTitle: true,
-                titlePositionPercentageOffset: 1.7,
-                titleStyle: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
+    return Obx(() {
+      if (controller.isLoading.value) {
+        return const Center(
+          child: Padding(
+            padding: EdgeInsets.all(50.0),
+            child: CircularProgressIndicator(color: Colors.white),
+          ),
+        );
+      }
+
+      if (controller.errorMessage.isNotEmpty) {
+        return Center(
+          child: Column(
+            children: [
+              Text(
+                controller.errorMessage.value,
+                style: const TextStyle(color: Colors.white),
               ),
-              PieChartSectionData(
-                value: 58.2,
-                color: const Color(0xFF26A69A),
-                title: '58.2%',
-                radius: 20,
-                showTitle: true,
-                titlePositionPercentageOffset: 1.7,
-                titleStyle: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
+              ElevatedButton(
+                onPressed: () => controller.fetchAdmissionsData(),
+                child: const Text("Retry"),
               ),
-            ],
-            legends: [
-              {"label": "Girls", "color": const Color(0xFF5C6BC0)},
-              {"label": "Boys", "color": const Color(0xFF26A69A)},
             ],
           ),
-        ),
-        const SizedBox(height: 20),
-        _buildChartCard(
-          "Total Strength Hostel/Day",
-          _buildDonutChart(
-            sections: [
-              PieChartSectionData(
-                value: 29.4,
-                color: const Color(0xFFEF5350),
-                title: '29.4%',
-                radius: 20,
-                showTitle: true,
-                titlePositionPercentageOffset: 1.7,
-                titleStyle: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              PieChartSectionData(
-                value: 70.6,
-                color: const Color(0xFF42A5F5),
-                title: '70.6%',
-                radius: 20,
-                showTitle: true,
-                titlePositionPercentageOffset: 1.7,
-                titleStyle: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-            ],
-            legends: [
-              {"label": "Day", "color": const Color(0xFFEF5350)},
-              {"label": "Hostel", "color": const Color(0xFF42A5F5)},
-            ],
-          ),
-        ),
-        const SizedBox(height: 20),
-        // Branch Wise Chart
-        _buildChartCard("Total Students Branch Wise", _buildBranchPieChart()),
-        const SizedBox(height: 25),
-        const Padding(
-          padding: EdgeInsets.only(left: 4),
+        );
+      }
+
+      final info = controller.admissionsData.value.infodata;
+      if (info == null) {
+        return const Center(
           child: Text(
-            "Total Students Data Branch Wise",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            "No data available",
+            style: TextStyle(color: Colors.white),
           ),
-        ),
-        const SizedBox(height: 15),
-        // Branch Data List
-        _buildBranchDataList(),
-      ],
-    );
+        );
+      }
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Statistics Grid
+          _buildStatsGrid(),
+          const SizedBox(height: 25),
+          // Charts Section
+          _buildChartCard(
+            "Total Strength Male/Female",
+            _buildDonutChart(
+              sections: [
+                PieChartSectionData(
+                  value: (info.girlsStudentsCount ?? 0).toDouble(),
+                  color: const Color(0xFF5C6BC0),
+                  title:
+                      '${((info.girlsStudentsCount ?? 0) / (info.totalStudentsCount ?? 1) * 100).toStringAsFixed(1)}%',
+                  radius: 20,
+                  showTitle: true,
+                  titlePositionPercentageOffset: 1.7,
+                  titleStyle: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+                PieChartSectionData(
+                  value: (info.boysStudentsCount ?? 0).toDouble(),
+                  color: const Color(0xFF26A69A),
+                  title:
+                      '${((info.boysStudentsCount ?? 0) / (info.totalStudentsCount ?? 1) * 100).toStringAsFixed(1)}%',
+                  radius: 20,
+                  showTitle: true,
+                  titlePositionPercentageOffset: 1.7,
+                  titleStyle: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+              ],
+              legends: [
+                {"label": "Girls", "color": const Color(0xFF5C6BC0)},
+                {"label": "Boys", "color": const Color(0xFF26A69A)},
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+          _buildChartCard(
+            "Total Strength Hostel/Day",
+            _buildDonutChart(
+              sections: [
+                PieChartSectionData(
+                  value: (info.dayStudentsCount ?? 0).toDouble(),
+                  color: const Color(0xFFEF5350),
+                  title:
+                      '${((info.dayStudentsCount ?? 0) / (info.totalStudentsCount ?? 1) * 100).toStringAsFixed(1)}%',
+                  radius: 20,
+                  showTitle: true,
+                  titlePositionPercentageOffset: 1.7,
+                  titleStyle: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+                PieChartSectionData(
+                  value: (info.hostelStudentsCount ?? 0).toDouble(),
+                  color: const Color(0xFF42A5F5),
+                  title:
+                      '${((info.hostelStudentsCount ?? 0) / (info.totalStudentsCount ?? 1) * 100).toStringAsFixed(1)}%',
+                  radius: 20,
+                  showTitle: true,
+                  titlePositionPercentageOffset: 1.7,
+                  titleStyle: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+              ],
+              legends: [
+                {"label": "Day", "color": const Color(0xFFEF5350)},
+                {"label": "Hostel", "color": const Color(0xFF42A5F5)},
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+          // Branch Wise Chart
+          _buildChartCard("Total Students Branch Wise", _buildBranchPieChart()),
+          const SizedBox(height: 25),
+          const Padding(
+            padding: EdgeInsets.only(left: 4),
+            child: Text(
+              "Total Students Data Branch Wise",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+          ),
+          const SizedBox(height: 15),
+          // Branch Data List
+          _buildBranchDataList(),
+        ],
+      );
+    });
   }
 
   Widget _buildAttendanceBody() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildAttendanceStatsGrid(),
-        const SizedBox(height: 25),
-        const Text(
-          "Student Attendance",
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 15),
-        _buildProgressCard(const Color(0xFF7E57C2)),
-        const SizedBox(height: 25),
-        const Text(
-          "Staff Attendance",
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 15),
-        _buildProgressCard(const Color(0xFF2196F3)),
-        const SizedBox(height: 25),
-        _buildTodaysAttendanceInfo(),
-        const SizedBox(height: 25),
-        _buildClassWiseSummary(),
-      ],
-    );
+    return Obx(() {
+      if (controller.isLoading.value) {
+        return const Center(
+          child: Padding(
+            padding: EdgeInsets.all(50.0),
+            child: CircularProgressIndicator(color: Colors.white),
+          ),
+        );
+      }
+
+      final info = controller.attendanceData.value.infodata;
+      if (info == null) {
+        return const Center(
+          child: Text(
+            "No data available",
+            style: TextStyle(color: Colors.white),
+          ),
+        );
+      }
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildAttendanceStatsGrid(info),
+          const SizedBox(height: 25),
+          const Text(
+            "Student Attendance",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 15),
+          _buildProgressCard(
+            const Color(0xFF7E57C2),
+            info.studentAttendanceCount ?? 0,
+          ),
+          const SizedBox(height: 25),
+          const Text(
+            "Staff Attendance",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 15),
+          _buildProgressCard(
+            const Color(0xFF2196F3),
+            info.staffAttendanceCount ?? 0,
+          ),
+          const SizedBox(height: 25),
+          _buildTodaysAttendanceInfo(info),
+          const SizedBox(height: 25),
+          _buildClassWiseSummary(info),
+        ],
+      );
+    });
   }
 
   Widget _buildHeaderIcon(IconData icon, {bool hasBadge = false}) {
@@ -390,7 +463,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     );
   }
 
-  Widget _buildAttendanceStatsGrid() {
+  Widget _buildAttendanceStatsGrid(AttendanceInfodata info) {
     return Column(
       children: [
         Row(
@@ -398,7 +471,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
             Expanded(
               child: _buildStatCard(
                 "Todays Outing",
-                "0",
+                (info.totalTodaysOutingCount ?? 0).toString(),
                 IconifyIcons.account,
                 [const Color(0xFF4DE1B0), const Color(0xFF00BFA5)],
               ),
@@ -407,7 +480,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
             Expanded(
               child: _buildStatCard(
                 "Home Pass",
-                "0",
+                (info.totalTodaysHomepassOutingCount ?? 0).toString(),
                 IconifyIcons.hugeIconsBus03,
                 [const Color(0xFFF1597E), const Color(0xFFD81B60)],
               ),
@@ -420,17 +493,19 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
             Expanded(
               child: _buildStatCard(
                 "Out Pass",
-                "0",
+                (info.totalTodaysOutpassOutingCount ?? 0).toString(),
                 IconifyIcons.clarityBuildingLine,
                 [const Color(0xFFFFB755), const Color(0xFFFB8C00)],
               ),
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: _buildStatCard("Self Pass", "0", IconifyIcons.account, [
-                const Color(0xFF46B1FF),
-                const Color(0xFF1E88E5),
-              ]),
+              child: _buildStatCard(
+                "Self Pass",
+                (info.totalTodaysSelfpassOutingCount ?? 0).toString(),
+                IconifyIcons.account,
+                [const Color(0xFF46B1FF), const Color(0xFF1E88E5)],
+              ),
             ),
           ],
         ),
@@ -438,16 +513,18 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
         Row(
           children: [
             Expanded(
-              child: _buildStatCard("Staff", "396", IconifyIcons.account, [
-                const Color(0xFF4EE298),
-                const Color(0xFF43A047),
-              ]),
+              child: _buildStatCard(
+                "Staff",
+                (info.staffCount ?? 0).toString(),
+                IconifyIcons.account,
+                [const Color(0xFF4EE298), const Color(0xFF43A047)],
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: _buildStatCard(
                 "Student Attendance",
-                "0",
+                (info.studentAttendanceCount ?? 0).toString(),
                 IconifyIcons.account,
                 [const Color(0xFFF1597E), const Color(0xFFD81B60)],
               ),
@@ -460,7 +537,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
             Expanded(
               child: _buildStatCard(
                 "Staff Attendance",
-                "0",
+                (info.staffAttendanceCount ?? 0).toString(),
                 IconifyIcons.phStudent,
                 [const Color(0xFF6B7AF5), const Color(0xFF5C6BC0)],
               ),
@@ -472,7 +549,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     );
   }
 
-  Widget _buildProgressCard(Color color) {
+  Widget _buildProgressCard(Color color, int count) {
     final List<String> branches = [
       "Pelluru",
       "VRB",
@@ -514,7 +591,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(5),
                         child: LinearProgressIndicator(
-                          value: 0.75,
+                          value: 0.75, // Static 75% as requested
                           backgroundColor: color.withOpacity(0.1),
                           valueColor: AlwaysStoppedAnimation<Color>(color),
                           minHeight: 8,
@@ -524,7 +601,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                     const Expanded(
                       flex: 1,
                       child: Text(
-                        " 75%",
+                        "75%",
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
@@ -542,7 +619,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     );
   }
 
-  Widget _buildTodaysAttendanceInfo() {
+  Widget _buildTodaysAttendanceInfo(AttendanceInfodata info) {
     return _buildChartCard(
       "Todays Attendance Info",
       Column(
@@ -576,11 +653,17 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                 const SizedBox(height: 8),
                 Divider(color: Colors.grey.shade200, height: 1),
                 const SizedBox(height: 12),
-                _buildInfoRow("Total", ""),
+                _buildInfoRow(
+                  "Total",
+                  (info.studentAttendanceCount ?? 0).toString(),
+                ),
                 const SizedBox(height: 8),
-                _buildInfoRow("Present", ""),
+                _buildInfoRow(
+                  "Present",
+                  (info.studentAttendanceCount ?? 0).toString(),
+                ), // Assuming Present = Total for now if no specific "present" field exists at top level
                 const SizedBox(height: 8),
-                _buildInfoRow("Absent", ""),
+                _buildInfoRow("Absent", "0"),
               ],
             ),
           ),
@@ -600,40 +683,40 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                 ),
               ],
             ),
-            child: const Column(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Total : 0",
-                  style: TextStyle(
+                  "Total : ${info.studentAttendanceCount ?? 0}",
+                  style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                     fontSize: 20,
                   ),
                 ),
-                SizedBox(height: 8),
-                Divider(color: Colors.white30, height: 1),
-                SizedBox(height: 12),
+                const SizedBox(height: 8),
+                const Divider(color: Colors.white30, height: 1),
+                const SizedBox(height: 12),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      "Total : 0",
-                      style: TextStyle(
+                      "Total : ${info.studentAttendanceCount ?? 0}",
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 13,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
                     Text(
-                      "Present : 0",
-                      style: TextStyle(
+                      "Present : ${info.studentAttendanceCount ?? 0}",
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 13,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    Text(
+                    const Text(
                       "Absent : 0",
                       style: TextStyle(
                         color: Colors.white,
@@ -677,20 +760,25 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     );
   }
 
-  Widget _buildClassWiseSummary() {
+  Widget _buildClassWiseSummary(AttendanceInfodata info) {
     return _buildChartCard(
       "Class Wise Student Attendance Summary",
       Column(
-        children: [
-          _buildClassCard("SSJC-ADARSA CAMPUS", 1),
-          const SizedBox(height: 15),
-          _buildClassCard("SSJC-VRB CAMPUS", 2),
-        ],
+        children: (info.classAttendanceSummary ?? [])
+            .asMap()
+            .entries
+            .map(
+              (entry) => Padding(
+                padding: const EdgeInsets.only(bottom: 15),
+                child: _buildClassCard(entry.value, entry.key + 1),
+              ),
+            )
+            .toList(),
       ),
     );
   }
 
-  Widget _buildClassCard(String branch, int sNo) {
+  Widget _buildClassCard(AttendanceClassSummary summary, int sNo) {
     return Container(
       width: 326, // FIXED WIDTH
       padding: const EdgeInsets.all(12),
@@ -725,7 +813,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
               ),
               Expanded(
                 child: Text(
-                  branch,
+                  summary.branchName ?? "",
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 13,
@@ -738,84 +826,92 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
           const SizedBox(height: 12),
           Divider(color: Colors.grey.shade200, height: 1),
           const SizedBox(height: 12),
-          const Text(
-            "Day Students",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Expanded(
-                child: _buildSimpleStat(
-                  "Total",
-                  "120",
-                  const Color(0xFF9575CD),
-                  Icons.group,
+          // Loop through shifts if needed, but summary card shows Day/Hostel for first shift usually or aggregate
+          // Based on the provided summary design, we show stats.
+          // Let's take the first shift or aggregate if possible.
+          if (summary.shifts != null && summary.shifts!.isNotEmpty) ...[
+            const Text(
+              "Day Students",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildSimpleStat(
+                    "Total",
+                    (summary.shifts!.values.first.day?.total ?? 0).toString(),
+                    const Color(0xFF9575CD),
+                    Icons.group,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _buildSimpleStat(
-                  "Present",
-                  "105",
-                  const Color(0xFF4DB6AC),
-                  Icons.person_outline,
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _buildSimpleStat(
+                    "Present",
+                    (summary.shifts!.values.first.day?.present ?? 0).toString(),
+                    const Color(0xFF4DB6AC),
+                    Icons.person,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _buildSimpleStat(
-                  "Absent",
-                  "15",
-                  const Color(0xFFE57373),
-                  Icons.person_off_outlined,
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _buildSimpleStat(
+                    "Absent",
+                    (summary.shifts!.values.first.day?.absent ?? 0).toString(),
+                    const Color(0xFFEF5350),
+                    Icons.person_off,
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          const Text(
-            "Hostel Students",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Expanded(
-                child: _buildSimpleStat(
-                  "Total",
-                  "120",
-                  const Color(0xFF9575CD),
-                  Icons.group,
+              ],
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              "Hostel Students",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildSimpleStat(
+                    "Total",
+                    (summary.shifts!.values.first.hostel?.total ?? 0)
+                        .toString(),
+                    const Color(0xFF42A5F5),
+                    Icons.hotel,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _buildSimpleStat(
-                  "Present",
-                  "105",
-                  const Color(0xFF4DB6AC),
-                  Icons.person_outline,
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _buildSimpleStat(
+                    "Present",
+                    (summary.shifts!.values.first.hostel?.present ?? 0)
+                        .toString(),
+                    const Color(0xFF66BB6A),
+                    Icons.check_circle,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _buildSimpleStat(
-                  "Absent",
-                  "15",
-                  const Color(0xFFE57373),
-                  Icons.person_off_outlined,
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _buildSimpleStat(
+                    "Absent",
+                    (summary.shifts!.values.first.hostel?.absent ?? 0)
+                        .toString(),
+                    const Color(0xFFFF7043),
+                    Icons.cancel,
+                  ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
+          ],
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const AttendanceSummaryPage(),
+                  builder: (context) => AttendanceSummaryPage(summary: summary),
                 ),
               );
             },
@@ -908,6 +1004,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   }
 
   Widget _buildStatsGrid() {
+    final info = controller.admissionsData.value.infodata;
     return Column(
       children: [
         Row(
@@ -915,17 +1012,19 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
             Expanded(
               child: _buildStatCard(
                 "Students",
-                "6869",
+                "${info?.totalStudentsCount ?? 0}",
                 IconifyIcons.phStudent,
                 [const Color(0xFF6B7AF5), const Color(0xFF5C6BC0)],
               ),
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: _buildStatCard("Boys", "3995", IconifyIcons.account, [
-                const Color(0xFFFFB755),
-                const Color(0xFFFB8C00),
-              ]),
+              child: _buildStatCard(
+                "Boys",
+                "${info?.boysStudentsCount ?? 0}",
+                IconifyIcons.account,
+                [const Color(0xFFFFB755), const Color(0xFFFB8C00)],
+              ),
             ),
           ],
         ),
@@ -933,16 +1032,18 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
         Row(
           children: [
             Expanded(
-              child: _buildStatCard("Girls", "2874", IconifyIcons.account, [
-                const Color(0xFF4EE298),
-                const Color(0xFF43A047),
-              ]),
+              child: _buildStatCard(
+                "Girls",
+                "${info?.girlsStudentsCount ?? 0}",
+                IconifyIcons.account,
+                [const Color(0xFF4EE298), const Color(0xFF43A047)],
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: _buildStatCard(
                 "Day",
-                "2018",
+                "${info?.dayStudentsCount ?? 0}",
                 IconifyIcons.hugeIconsBus03,
                 [const Color(0xFF46B1FF), const Color(0xFF1E88E5)],
               ),
@@ -955,7 +1056,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
             Expanded(
               child: _buildStatCard(
                 "Hostel",
-                "4850",
+                "${info?.hostelStudentsCount ?? 0}",
                 IconifyIcons.clarityBuildingLine,
                 [const Color(0xFFF1597E), const Color(0xFFD81B60)],
               ),
@@ -1005,18 +1106,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
               ),
             ),
           ),
-          Positioned(
-            bottom: -30,
-            right: -20,
-            child: Container(
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.05),
-                shape: BoxShape.circle,
-              ),
-            ),
-          ),
+
           Padding(
             padding: const EdgeInsets.all(12),
             child: Row(
@@ -1157,6 +1247,10 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   }
 
   Widget _buildBranchPieChart() {
+    final info = controller.admissionsData.value.infodata;
+    final branchList = info?.totalBranchInfo ?? [];
+    final totalStudents = info?.totalStudentsCount ?? 1;
+
     final List<Color> branchColors = [
       Colors.orange,
       Colors.amber,
@@ -1176,7 +1270,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
           flex: 3,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: branchData.asMap().entries.map((entry) {
+            children: branchList.asMap().entries.map((entry) {
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 1.5),
                 child: Row(
@@ -1192,7 +1286,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        entry.value['name'] as String,
+                        entry.value.branchName ?? "",
                         style: const TextStyle(
                           fontSize: 9,
                           color: Colors.black87,
@@ -1217,12 +1311,12 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
               height: 141, // Exact spec from image
               child: PieChart(
                 PieChartData(
-                  sections: branchData.asMap().entries.map((entry) {
+                  sections: branchList.asMap().entries.map((entry) {
                     return PieChartSectionData(
-                      value: (entry.value['count'] as int).toDouble(),
+                      value: (entry.value.total ?? 0).toDouble(),
                       color: branchColors[entry.key % branchColors.length],
                       title:
-                          '${((entry.value['count'] as int) / 6869 * 100).toStringAsFixed(1)}%',
+                          '${((entry.value.total ?? 0) / totalStudents * 100).toStringAsFixed(1)}%',
                       radius: 70.5, // 141 / 2
                       showTitle: true,
                       titleStyle: const TextStyle(
@@ -1244,6 +1338,9 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   }
 
   Widget _buildBranchDataList() {
+    final info = controller.admissionsData.value.infodata;
+    final branchList = info?.totalBranchInfo ?? [];
+
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -1253,10 +1350,10 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
       child: ListView.separated(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
-        itemCount: branchData.length,
+        itemCount: branchList.length,
         separatorBuilder: (context, index) => const SizedBox(height: 12),
         itemBuilder: (context, index) {
-          final item = branchData[index];
+          final item = branchList[index];
           return Container(
             padding: const EdgeInsets.all(12),
             height: 107, // Specification: Height: 107px
@@ -1299,7 +1396,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                     ),
                     Expanded(
                       child: Text(
-                        item['name'] as String,
+                        item.branchName ?? "",
                         style: const TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
@@ -1322,7 +1419,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                       ),
                     ),
                     Text(
-                      item['count'].toString(),
+                      item.total.toString(),
                       style: const TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
@@ -1689,109 +1786,122 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   }
 
   Widget _buildFinanceBody() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildFinanceStatsGrid(),
-        const SizedBox(height: 25),
-        _buildFinanceChartCard(
-          "Total Income Branch Wise",
-          _buildTotalIncomeBranchWiseChart(),
-        ),
-        const SizedBox(height: 20),
-        _buildFinanceChartCard(
-          "Total Fee Due/Paid",
-          _buildFeeDuePaidDonutChart(),
-        ),
-        const SizedBox(height: 20),
-        _buildFeeCollectionInfoSection(),
-        const SizedBox(height: 20),
-        _buildFinanceChartCard(
-          "Total Fee Due/Paid Branch Wise",
-          _buildDuePaidBranchProgressBarList(),
-        ),
-        const SizedBox(height: 20),
-        _buildFinanceChartCard(
-          "Expense vs Income - April 24",
-          _buildExpenseVsIncomeLineChart(),
-        ),
-        const SizedBox(height: 20),
-        _buildExpensesInfoSection(),
-        const SizedBox(height: 20),
-        _buildCashHoldingSection(),
-        const SizedBox(height: 20),
-        _buildExpensesMonthSection(),
-        const SizedBox(height: 20),
-        _buildTodaysExpensesSection(),
-      ],
-    );
+    return Obx(() {
+      if (controller.isLoading.value) {
+        return const Center(
+          child: Padding(
+            padding: EdgeInsets.all(50.0),
+            child: CircularProgressIndicator(color: Colors.white),
+          ),
+        );
+      }
+
+      if (controller.errorMessage.isNotEmpty) {
+        return Center(
+          child: Column(
+            children: [
+              Text(
+                controller.errorMessage.value,
+                style: const TextStyle(color: Colors.white),
+              ),
+              ElevatedButton(
+                onPressed: () => controller.fetchFinanceData(),
+                child: const Text("Retry"),
+              ),
+            ],
+          ),
+        );
+      }
+
+      final info = controller.financeData.value.infodata;
+      if (info == null) {
+        return const Center(
+          child: Text(
+            "No data available",
+            style: TextStyle(color: Colors.white),
+          ),
+        );
+      }
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildFinanceStatsGrid(),
+          const SizedBox(height: 25),
+          _buildFinanceChartCard(
+            "Total Income Branch Wise",
+            _buildTotalIncomeBranchWiseChart(),
+          ),
+          const SizedBox(height: 20),
+          _buildFinanceChartCard(
+            "Total Fee Due/Paid",
+            _buildFeeDuePaidDonutChart(),
+          ),
+          const SizedBox(height: 20),
+          _buildFeeCollectionInfoSection(),
+          const SizedBox(height: 20),
+          _buildFinanceChartCard(
+            "Total Fee Due/Paid Branch Wise",
+            _buildDuePaidBranchProgressBarList(),
+          ),
+          const SizedBox(height: 20),
+          _buildFinanceChartCard(
+            "Expense vs Income - April 24",
+            _buildExpenseVsIncomeLineChart(),
+          ),
+          const SizedBox(height: 20),
+          _buildExpensesInfoSection(),
+          const SizedBox(height: 20),
+          _buildCashHoldingSection(),
+        ],
+      );
+    });
   }
 
   Widget _buildFinanceStatsGrid() {
+    final info = controller.financeData.value.infodata;
     return Column(
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: _buildStatCard("Today Income", "0", IconifyIcons.account, [
-                const Color(0xFF6B7AF5),
-                const Color(0xFF5C6BC0),
-              ]),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _buildStatCard(
-                "Today Expense",
-                "0",
-                IconifyIcons.account,
-                [const Color(0xFFFFB755), const Color(0xFFFB8C00)],
-              ),
-            ),
-          ],
+        _buildStatCard(
+          "Today Income",
+          "${info?.todayIncomeInfo ?? 0}",
+          IconifyIcons.todayIncome,
+          [const Color(0xFF6B7AF5), const Color(0xFF5C6BC0)],
         ),
         const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(
-              child: _buildStatCard(
-                "Month Income",
-                "20100",
-                IconifyIcons.account,
-                [const Color(0xFF4EE298), const Color(0xFF43A047)],
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _buildStatCard(
-                "Month Expense",
-                "87450",
-                IconifyIcons.account,
-                [const Color(0xFF46B1FF), const Color(0xFF1E88E5)],
-              ),
-            ),
-          ],
+        _buildStatCard(
+          "Today Expense",
+          "${info?.todayExpenseInfo ?? 0}",
+          IconifyIcons.todayExpense,
+          [const Color(0xFFFFB755), const Color(0xFFFB8C00)],
         ),
         const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(
-              child: _buildStatCard(
-                "Total Income",
-                "239640060",
-                IconifyIcons.account,
-                [const Color(0xFFF1597E), const Color(0xFFD81B60)],
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _buildStatCard(
-                "Total Expense",
-                "37156356",
-                IconifyIcons.account,
-                [const Color(0xFF26A69A), const Color(0xFF00897B)],
-              ),
-            ),
-          ],
+        _buildStatCard(
+          "Month Income",
+          "${info?.monthIncomeInfo ?? 0}",
+          IconifyIcons.doubleArrowDown,
+          [const Color(0xFF4EE298), const Color(0xFF43A047)],
+        ),
+        const SizedBox(height: 12),
+        _buildStatCard(
+          "Month Expense",
+          "${info?.monthExpenseInfo ?? 0}",
+          IconifyIcons.doubleArrowUp,
+          [const Color(0xFF46B1FF), const Color(0xFF1E88E5)],
+        ),
+        const SizedBox(height: 12),
+        _buildStatCard(
+          "Total Income",
+          "${info?.totalIncomeInfo ?? 0}",
+          IconifyIcons.totalIncome,
+          [const Color(0xFFF1597E), const Color(0xFFD81B60)],
+        ),
+        const SizedBox(height: 12),
+        _buildStatCard(
+          "Total Expense",
+          "${info?.totalExpenseInfo ?? 0}",
+          IconifyIcons.totalExpense,
+          [const Color(0xFF26A69A), const Color(0xFF00897B)],
         ),
       ],
     );
@@ -1801,6 +1911,9 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     String title,
     Widget chart, {
     bool showTabs = false,
+    List<String>? tabLabels,
+    String? activeTab,
+    void Function(String)? onTabChanged,
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -1829,17 +1942,20 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
               ),
             ),
           ),
-          if (showTabs)
+          if (showTabs && tabLabels != null && onTabChanged != null)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _buildSmallTab("Todays", true),
-                  _buildSmallTab("Yesterdays", false),
-                  _buildSmallTab("Month", false),
-                  _buildSmallTab("Total", false),
-                ],
+                children: tabLabels
+                    .map(
+                      (label) => _buildSmallTab(
+                        label,
+                        activeTab == label,
+                        () => onTabChanged(label),
+                      ),
+                    )
+                    .toList(),
               ),
             ),
           Container(
@@ -1859,29 +1975,39 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     );
   }
 
-  Widget _buildSmallTab(String label, bool isActive) {
-    return Column(
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-            color: isActive ? const Color(0xFF8B5CF6) : Colors.black54,
+  Widget _buildSmallTab(String label, bool isActive, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: isActive ? const Color(0xFF8B5CF6) : Colors.black54,
+            ),
           ),
-        ),
-        if (isActive)
-          Container(
-            margin: const EdgeInsets.only(top: 4),
-            height: 2,
-            width: 40,
-            color: const Color(0xFF8B5CF6),
-          ),
-      ],
+          if (isActive)
+            Container(
+              margin: const EdgeInsets.only(top: 4),
+              height: 2,
+              width: 40,
+              color: const Color(0xFF8B5CF6),
+            ),
+        ],
+      ),
     );
   }
 
   Widget _buildTotalIncomeBranchWiseChart() {
+    final info = controller.financeData.value.infodata;
+    final collectionList = info?.thisMonthFeeCollectionInfo ?? [];
+    double grandTotal = 0;
+    for (var item in collectionList) {
+      grandTotal += double.tryParse(item.total?.toString() ?? '0') ?? 0;
+    }
+
     final List<Color> colors = [
       const Color(0xFFFF6B6B), // Coral Red
       const Color(0xFFFFBD69), // Pastel Orange
@@ -1895,13 +2021,17 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
       const Color(0xFF009688), // Dark Teal
     ];
 
+    if (collectionList.isEmpty) {
+      return const Center(child: Text("No branch income data"));
+    }
+
     return Row(
       children: [
         Expanded(
           flex: 6,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: branchData.asMap().entries.map((entry) {
+            children: collectionList.asMap().entries.map((entry) {
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 2),
                 child: Row(
@@ -1917,7 +2047,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        entry.value['name'].toString(),
+                        entry.value.branchName ?? "",
                         style: const TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w500,
@@ -1942,26 +2072,19 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
               height: 141,
               child: PieChart(
                 PieChartData(
-                  startDegreeOffset: 270, // Start from top (BN GIRLS)
-                  sections: branchData.asMap().entries.map((entry) {
-                    final List<String> picTitles = [
-                      '8.7%',
-                      '8.7%',
-                      '8.7%',
-                      '5.2%',
-                      '5.2%',
-                      '5.2%',
-                      '8.7%',
-                      '8.8%',
-                      '8.7%',
-                      '8.7%',
-                    ];
+                  startDegreeOffset: 270,
+                  sections: collectionList.asMap().entries.map((entry) {
+                    final total =
+                        double.tryParse(entry.value.total?.toString() ?? '0') ??
+                        0;
                     return PieChartSectionData(
-                      value: (entry.key >= 3 && entry.key <= 5) ? 5.2 : 10,
+                      value: total,
                       color: colors[entry.key % colors.length],
                       radius: 70.5,
                       showTitle: true,
-                      title: picTitles[entry.key % picTitles.length],
+                      title: grandTotal > 0
+                          ? '${(total / grandTotal * 100).toStringAsFixed(1)}%'
+                          : '0%',
                       titleStyle: const TextStyle(
                         fontSize: 9,
                         color: Colors.white,
@@ -1981,6 +2104,21 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   }
 
   Widget _buildFeeDuePaidDonutChart() {
+    final info = controller.financeData.value.infodata;
+    final branchFeeList = info?.branchwiseTotalFee ?? [];
+
+    double totalPaid = 0;
+    double totalDue = 0;
+
+    for (var item in branchFeeList) {
+      totalPaid += double.tryParse(item.totalPaid?.toString() ?? '0') ?? 0;
+      totalDue += double.tryParse(item.totalDue?.toString() ?? '0') ?? 0;
+    }
+
+    double total = totalPaid + totalDue;
+    double paidPercentage = total > 0 ? (totalPaid / total * 100) : 0;
+    double duePercentage = total > 0 ? (totalDue / total * 100) : 0;
+
     return Column(
       children: [
         SizedBox(
@@ -1991,9 +2129,9 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
               startDegreeOffset: 180,
               sections: [
                 PieChartSectionData(
-                  value: 58.2,
+                  value: totalPaid,
                   color: const Color(0xFF26A69A),
-                  title: '58.2%',
+                  title: '${paidPercentage.toStringAsFixed(1)}%',
                   radius: 30,
                   showTitle: true,
                   titlePositionPercentageOffset: 1.3,
@@ -2004,9 +2142,9 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                   ),
                 ),
                 PieChartSectionData(
-                  value: 41.8,
+                  value: totalDue,
                   color: const Color(0xFF5C6BC0),
-                  title: '41.8%',
+                  title: '${duePercentage.toStringAsFixed(1)}%',
                   radius: 30,
                   showTitle: true,
                   titlePositionPercentageOffset: 1.3,
@@ -2057,39 +2195,80 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   }
 
   Widget _buildFeeCollectionInfoSection() {
+    final info = controller.financeData.value.infodata;
+
+    // Pick data list based on active fee tab
+    final collectionList = _activeFeeTab == "Todays"
+        ? (info?.todaysFeeCollectionInfo ?? [])
+        : _activeFeeTab == "Yesterdays"
+        ? (info?.yesterdaysFeeCollectionInfo ?? [])
+        : _activeFeeTab == "Month"
+        ? (info?.thisMonthFeeCollectionInfo ?? [])
+        : (info?.feeCollectionInfo ?? []);
+
+    // Calculate totals for summary
+    double totalCash = 0;
+    double totalUPI = 0;
+    double totalCheque = 0;
+    double grandTotal = 0;
+
+    for (var item in collectionList) {
+      totalCash += double.tryParse(item.cash?.toString() ?? '0') ?? 0;
+      totalUPI += double.tryParse(item.upi?.toString() ?? '0') ?? 0;
+      totalCheque += double.tryParse(item.cheque?.toString() ?? '0') ?? 0;
+      grandTotal += double.tryParse(item.total?.toString() ?? '0') ?? 0;
+    }
+
     return _buildFinanceChartCard(
       "Fee collection Info",
       Column(
         children: [
-          _buildInfoListCard(
-            1,
-            "SSJC-ADARSA CAMPUS",
-            "10,000",
-            "0",
-            "10,000",
-            "20,000",
+          if (collectionList.isEmpty)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 24),
+              child: Center(
+                child: Text(
+                  "No data available",
+                  style: TextStyle(color: Colors.black54),
+                ),
+              ),
+            )
+          else
+            ...collectionList.asMap().entries.map((entry) {
+              final item = entry.value;
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: _buildInfoListCard(
+                  entry.key + 1,
+                  item.branchName ?? "",
+                  item.cash?.toString() ?? "0",
+                  item.upi?.toString() ?? "0",
+                  item.cheque?.toString() ?? "0",
+                  item.total?.toString() ?? "0",
+                ),
+              );
+            }),
+          _buildFinanceSummaryCard(
+            grandTotal.toStringAsFixed(0),
+            totalCash.toStringAsFixed(0),
+            totalUPI.toStringAsFixed(0),
+            totalCheque.toStringAsFixed(0),
           ),
-          const SizedBox(height: 12),
-          _buildInfoListCard(
-            2,
-            "SSJC-ADARSA CAMPUS",
-            "10,000",
-            "0",
-            "10,000",
-            "20,000",
-          ),
-          const SizedBox(height: 12),
-          _buildFinanceSummaryCard("20,000", "10,000", "0", "10,000"),
         ],
       ),
       showTabs: true,
+      tabLabels: const ["Todays", "Yesterdays", "Month", "Total"],
+      activeTab: _activeFeeTab,
+      onTabChanged: (tab) {
+        setState(() => _activeFeeTab = tab);
+      },
     );
   }
 
   Widget _buildInfoListCard(
     int sNo,
     String branch,
-    String count,
+    String cash,
     String upi,
     String cheque,
     String total,
@@ -2111,7 +2290,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
             "S.NO: $sNo",
             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
           ),
-          const SizedBox(height: 4),
+          const Divider(),
           Row(
             children: [
               const Text(
@@ -2127,10 +2306,9 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
               ),
             ],
           ),
-          const Divider(),
-          _buildInfoRow("Count", count),
+          _buildInfoRow("CASH", cash),
           _buildInfoRow("UPI", upi),
-          _buildInfoRow("Cheque", cheque),
+          _buildInfoRow("CHEQUE", cheque),
           const Divider(),
           _buildInfoRow("Total", total),
         ],
@@ -2140,7 +2318,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
 
   Widget _buildFinanceSummaryCard(
     String total,
-    String count,
+    String cash,
     String upi,
     String cheque,
   ) {
@@ -2165,9 +2343,9 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildSummaryItem("Count", count),
+              _buildSummaryItem("CASH", cash),
               _buildSummaryItem("UPI", upi),
-              _buildSummaryItem("Cheque", cheque),
+              _buildSummaryItem("CHEQUE", cheque),
             ],
           ),
         ],
@@ -2195,17 +2373,21 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   }
 
   Widget _buildDuePaidBranchProgressBarList() {
-    final List<String> branches = branchData
-        .map((e) => e['name'].toString())
-        .toList();
+    final info = controller.financeData.value.infodata;
+    final branchFeeList = info?.branchwiseTotalFee ?? [];
     return Column(
-      children: branches
-          .map((branch) => _buildBranchProgressRow(branch))
+      children: branchFeeList
+          .map((item) => _buildBranchProgressRow(item))
           .toList(),
     );
   }
 
-  Widget _buildBranchProgressRow(String branch) {
+  Widget _buildBranchProgressRow(BranchwiseTotalFee item) {
+    double paid = double.tryParse(item.totalPaid?.toString() ?? '0') ?? 0;
+    double total = double.tryParse(item.total?.toString() ?? '0') ?? 0;
+    double progress = (total > 0) ? (paid / total) : 0;
+    int percentage = (progress * 100).toInt();
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Column(
@@ -2214,25 +2396,27 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                branch,
+                item.branchName ?? "",
                 style: const TextStyle(
                   fontSize: 10,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const Text(
-                "75%",
-                style: TextStyle(fontSize: 10, color: Colors.black54),
+              Text(
+                "$percentage%",
+                style: const TextStyle(fontSize: 10, color: Colors.black54),
               ),
             ],
           ),
           const SizedBox(height: 4),
           ClipRRect(
             borderRadius: BorderRadius.circular(4),
-            child: const LinearProgressIndicator(
-              value: 0.75,
-              backgroundColor: Color(0xFFF3EDFF),
-              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF26A69A)),
+            child: LinearProgressIndicator(
+              value: progress,
+              backgroundColor: const Color(0xFFF3EDFF),
+              valueColor: const AlwaysStoppedAnimation<Color>(
+                Color(0xFF26A69A),
+              ),
               minHeight: 6,
             ),
           ),
@@ -2242,142 +2426,299 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   }
 
   Widget _buildExpenseVsIncomeLineChart() {
-    return SizedBox(
-      height: 200,
-      child: LineChart(
-        LineChartData(
-          gridData: FlGridData(
-            show: true,
-            drawVerticalLine: true,
-            getDrawingHorizontalLine: (value) =>
-                FlLine(color: Colors.grey.shade200, strokeWidth: 1),
-            getDrawingVerticalLine: (value) =>
-                FlLine(color: Colors.grey.shade200, strokeWidth: 1),
-          ),
-          titlesData: FlTitlesData(
-            show: true,
-            bottomTitles: AxisTitles(
-              sideTitles: SideTitles(
-                showTitles: true,
-                getTitlesWidget: (value, meta) {
-                  const months = [
-                    'Jun',
-                    'Jul',
-                    'Aug',
-                    'Sep',
-                    'Oct',
-                    'Nov',
-                    'Dec',
-                    'Jan',
-                    'Feb',
-                    'Mar',
-                    'Apr',
-                    'May',
-                  ];
-                  if (value.toInt() >= 0 && value.toInt() < months.length) {
-                    return Text(
-                      months[value.toInt()],
-                      style: const TextStyle(fontSize: 8),
-                    );
-                  }
-                  return const Text('');
-                },
-              ),
-            ),
-            leftTitles: AxisTitles(
-              sideTitles: SideTitles(
-                showTitles: true,
-                reservedSize: 40,
-                getTitlesWidget: (value, meta) {
-                  if (value % 4000000 == 0) {
-                    return Text(
-                      '${(value / 1000000).toInt()}M',
-                      style: const TextStyle(fontSize: 8),
-                    );
-                  }
-                  return const Text('');
-                },
-              ),
-            ),
-            topTitles: const AxisTitles(
-              sideTitles: SideTitles(showTitles: false),
-            ),
-            rightTitles: const AxisTitles(
-              sideTitles: SideTitles(showTitles: false),
-            ),
-          ),
-          borderData: FlBorderData(show: false),
-          lineBarsData: [
-            LineChartBarData(
-              spots: const [
-                FlSpot(0, 4000000),
-                FlSpot(1, 8000000),
-                FlSpot(2, 6000000),
-                FlSpot(3, 9000000),
-                FlSpot(4, 8000000),
-                FlSpot(5, 12000000),
-                FlSpot(6, 7000000),
-                FlSpot(7, 10000000),
-              ],
-              isCurved: true,
-              color: const Color(0xFF4EE298),
-              barWidth: 3,
-              isStrokeCapRound: true,
-              dotData: const FlDotData(show: false),
-              belowBarData: BarAreaData(
+    final info = controller.financeData.value.infodata;
+    final chartData = info?.incomeExpenseInfo ?? [];
+
+    if (chartData.isEmpty) {
+      return const SizedBox(
+        height: 200,
+        child: Center(child: Text("No monthly chart data")),
+      );
+    }
+
+    List<FlSpot> incomeSpots = [];
+    List<FlSpot> expenseSpots = [];
+    double maxX = (chartData.length - 1).toDouble();
+    double maxY = 0;
+
+    for (int i = 0; i < chartData.length; i++) {
+      double inc = double.tryParse(chartData[i].income?.toString() ?? '0') ?? 0;
+      double exp =
+          double.tryParse(chartData[i].expense?.toString() ?? '0') ?? 0;
+      incomeSpots.add(FlSpot(i.toDouble(), inc));
+      expenseSpots.add(FlSpot(i.toDouble(), exp));
+      if (inc > maxY) maxY = inc;
+      if (exp > maxY) maxY = exp;
+    }
+
+    // Add some buffer to maxY
+    maxY = maxY * 1.1;
+    if (maxY == 0) maxY = 1000000;
+
+    return Column(
+      children: [
+        SizedBox(
+          height: 200,
+          child: LineChart(
+            LineChartData(
+              gridData: FlGridData(
                 show: true,
-                color: const Color(0xFF4EE298).withAlpha(30),
+                drawVerticalLine: true,
+                getDrawingHorizontalLine: (value) =>
+                    FlLine(color: Colors.grey.shade200, strokeWidth: 1),
+                getDrawingVerticalLine: (value) =>
+                    FlLine(color: Colors.grey.shade200, strokeWidth: 1),
               ),
-            ),
-            LineChartBarData(
-              spots: const [
-                FlSpot(0, 6000000),
-                FlSpot(1, 9000000),
-                FlSpot(2, 7000000),
-                FlSpot(3, 11000000),
-                FlSpot(4, 10000000),
-                FlSpot(5, 14000000),
-                FlSpot(6, 9000000),
-                FlSpot(7, 12000000),
-              ],
-              isCurved: true,
-              color: const Color(0xFF46B1FF),
-              barWidth: 3,
-              isStrokeCapRound: true,
-              dotData: const FlDotData(show: false),
-              belowBarData: BarAreaData(
+              titlesData: FlTitlesData(
                 show: true,
-                color: const Color(0xFF46B1FF).withAlpha(30),
+                bottomTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    getTitlesWidget: (value, meta) {
+                      int index = value.toInt();
+                      if (index >= 0 && index < chartData.length) {
+                        String month = chartData[index].month ?? "";
+                        // Extract only the month part if it's like "2025 Apr"
+                        if (month.contains(" ")) {
+                          month = month.split(" ").last;
+                        }
+                        return Text(month, style: const TextStyle(fontSize: 8));
+                      }
+                      return const Text('');
+                    },
+                  ),
+                ),
+                leftTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    reservedSize: 40,
+                    getTitlesWidget: (value, meta) {
+                      if (value == 0) return const Text("");
+                      if (value >= 1000000) {
+                        return Text(
+                          '${(value / 1000000).toInt()}M',
+                          style: const TextStyle(fontSize: 8),
+                        );
+                      } else if (value >= 1000) {
+                        return Text(
+                          '${(value / 1000).toInt()}K',
+                          style: const TextStyle(fontSize: 8),
+                        );
+                      }
+                      return Text(
+                        value.toInt().toString(),
+                        style: const TextStyle(fontSize: 8),
+                      );
+                    },
+                  ),
+                ),
+                topTitles: const AxisTitles(
+                  sideTitles: SideTitles(showTitles: false),
+                ),
+                rightTitles: const AxisTitles(
+                  sideTitles: SideTitles(showTitles: false),
+                ),
               ),
+              borderData: FlBorderData(show: false),
+              minX: 0,
+              maxX: maxX,
+              minY: 0,
+              maxY: maxY,
+              lineBarsData: [
+                LineChartBarData(
+                  spots: incomeSpots,
+                  isCurved: true,
+                  color: const Color(0xFF46B1FF), // Blue for Income
+                  barWidth: 3,
+                  isStrokeCapRound: true,
+                  dotData: const FlDotData(show: false),
+                  belowBarData: BarAreaData(
+                    show: true,
+                    color: const Color(0xFF46B1FF).withAlpha(30),
+                  ),
+                ),
+                LineChartBarData(
+                  spots: expenseSpots,
+                  isCurved: true,
+                  color: const Color(0xFF4EE298), // Green for Expenses
+                  barWidth: 3,
+                  isStrokeCapRound: true,
+                  dotData: const FlDotData(show: false),
+                  belowBarData: BarAreaData(
+                    show: true,
+                    color: const Color(0xFF4EE298).withAlpha(30),
+                  ),
+                ),
+              ],
             ),
+          ),
+        ),
+        const SizedBox(height: 15),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _buildLegendItem("Expenses", const Color(0xFF4EE298)),
+            const SizedBox(width: 20),
+            _buildLegendItem("Income", const Color(0xFF46B1FF)),
           ],
         ),
-      ),
+      ],
     );
   }
 
   Widget _buildExpensesInfoSection() {
+    final info = controller.financeData.value.infodata;
+
+    // Pick data list based on active expense tab
+    dynamic expenseList;
+    String totalAmount = "0";
+
+    if (_activeExpenseTab == "Todays") {
+      expenseList = info?.expensesInfoToday ?? [];
+      totalAmount = "${info?.todayExpenseInfo ?? 0}";
+    } else if (_activeExpenseTab == "Yesterdays") {
+      expenseList = info?.yesterdayExpenseTableData ?? [];
+      // Calculate total from table data if summary not directly available
+      double sum = 0;
+      for (var item in (expenseList as List<ExpenseTableData>)) {
+        sum += double.tryParse(item.total?.toString() ?? '0') ?? 0;
+      }
+      totalAmount = sum.toStringAsFixed(0);
+    } else if (_activeExpenseTab == "Month") {
+      expenseList = info?.expensesInfoThisMonth ?? [];
+      totalAmount = "${info?.monthExpenseInfo ?? 0}";
+    } else {
+      // Total
+      expenseList = info?.totalExpenseTableData ?? [];
+      totalAmount = "${info?.totalExpenseInfo ?? 0}";
+    }
+
     return _buildFinanceChartCard(
       "Expenses Info",
       Column(
         children: [
-          _buildInfoListCard(1, "SSJC-ADARSA CAMPUS", "", "", "", "0"),
-          const SizedBox(height: 12),
-          _buildFinanceSummaryCard("0", "0", "0", "0"),
+          if (expenseList.isEmpty)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 24),
+              child: Center(
+                child: Text(
+                  "No data available",
+                  style: TextStyle(color: Colors.black54),
+                ),
+              ),
+            )
+          else ...[
+            ...expenseList.asMap().entries.map((entry) {
+              final item = entry.value;
+              if (item is ExpenseItem) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: _buildExpenseItemCard(
+                    entry.key + 1,
+                    item.branchName ?? "",
+                    item.ledgername ?? "",
+                    item.amount?.toString() ?? "0",
+                  ),
+                );
+              } else if (item is ExpenseTableData) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: _buildExpenseTableDataCard(
+                    entry.key + 1,
+                    item.branchName ?? "",
+                    item.cash?.toString() ?? "0",
+                    item.upi?.toString() ?? "0",
+                    item.cheque?.toString() ?? "0",
+                    item.total?.toString() ?? "0",
+                  ),
+                );
+              }
+              return const SizedBox();
+            }),
+          ],
+          _buildSimpleTotalBar(totalAmount),
         ],
       ),
       showTabs: true,
+      tabLabels: const ["Todays", "Yesterdays", "Month", "Total"],
+      activeTab: _activeExpenseTab,
+      onTabChanged: (tab) {
+        setState(() => _activeExpenseTab = tab);
+      },
+    );
+  }
+
+  Widget _buildExpenseTableDataCard(
+    int sNo,
+    String branch,
+    String cash,
+    String upi,
+    String cheque,
+    String total,
+  ) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade100),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withAlpha(10), blurRadius: 4),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "S.NO: $sNo",
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+          ),
+          const Divider(),
+          Row(
+            children: [
+              const Text(
+                "Branch : ",
+                style: TextStyle(color: Colors.black54, fontSize: 13),
+              ),
+              Text(
+                branch,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                ),
+              ),
+            ],
+          ),
+          const Divider(),
+          _buildInfoRow("CASH", cash),
+          _buildInfoRow("UPI", upi),
+          _buildInfoRow("CHEQUE", cheque),
+          const Divider(),
+          _buildInfoRow("Total", total),
+        ],
+      ),
     );
   }
 
   Widget _buildCashHoldingSection() {
+    final info = controller.financeData.value.infodata;
+    final cashList = info?.cashholdings ?? [];
+
     return _buildFinanceChartCard(
       "Cash Holding",
       Column(
         children: [
-          _buildCashHolderCard(1, "BAYYAVARAPU LAKSHMI PRASAD", "-5896484"),
-          const SizedBox(height: 10),
-          _buildCashHolderCard(2, "BAPIREDDY ANJALI", "-4379466"),
+          ...cashList.asMap().entries.map((entry) {
+            final item = entry.value;
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: _buildCashHolderCard(
+                entry.key + 1,
+                item.username ?? "",
+                item.netBalance?.toString() ?? "0",
+              ),
+            );
+          }),
         ],
       ),
     );
@@ -2398,7 +2739,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
             "S.NO: $sNo",
             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
           ),
-          const SizedBox(height: 4),
+          const Divider(),
           Row(
             children: [
               const Text(
@@ -2434,31 +2775,6 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     );
   }
 
-  Widget _buildExpensesMonthSection() {
-    return _buildFinanceChartCard(
-      "Expenses Info - March 2026",
-      Column(
-        children: [
-          _buildExpenseItemCard(
-            1,
-            "SSJC-ADARSA CAMPUS",
-            "GANESH REDDY SIR",
-            "15000",
-          ),
-          const SizedBox(height: 10),
-          _buildExpenseItemCard(
-            2,
-            "SSJC-ADARSA CAMPUS",
-            "GANESH REDDY SIR",
-            "15000",
-          ),
-          const SizedBox(height: 12),
-          _buildSimpleTotalBar("87450"),
-        ],
-      ),
-    );
-  }
-
   Widget _buildExpenseItemCard(
     int sNo,
     String branch,
@@ -2479,6 +2795,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
             "S.NO: $sNo",
             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
           ),
+          const Divider(),
           _buildInfoRow("Branch", branch),
           _buildInfoRow("Expense Head", head),
           _buildInfoRow("Amount", amount),
@@ -2502,43 +2819,6 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
           fontWeight: FontWeight.bold,
           fontSize: 16,
         ),
-      ),
-    );
-  }
-
-  Widget _buildTodaysExpensesSection() {
-    return _buildFinanceChartCard(
-      "Todays Expenses - Tue-10 Mar",
-      Column(
-        children: [
-          _buildTodaysExpenseItemCard(1),
-          const SizedBox(height: 10),
-          _buildSimpleTotalBar("0"),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTodaysExpenseItemCard(int sNo) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade100),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "S.NO: $sNo",
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-          ),
-          _buildInfoRow("Branch", ""),
-          _buildInfoRow("Expense Head", ""),
-          _buildInfoRow("Amount", ""),
-          _buildInfoRow("Note", ""),
-        ],
       ),
     );
   }

@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../controllers/batch_controller.dart';
-import '../controllers/branch_controller.dart';
-import '../controllers/course_controller.dart';
-import '../controllers/group_controller.dart';
+import '../controllers/add_homework_controller.dart';
 import '../widgets/staff_header.dart';
 
 class AddAssignmentsPage extends StatefulWidget {
@@ -14,35 +11,7 @@ class AddAssignmentsPage extends StatefulWidget {
 }
 
 class _AddAssignmentsPageState extends State<AddAssignmentsPage> {
-  final TextEditingController titleController = TextEditingController();
-  final TextEditingController descriptionController = TextEditingController();
-
-  final BranchController branchCtrl = Get.put(BranchController());
-  final GroupController groupCtrl = Get.put(GroupController());
-  final CourseController courseCtrl = Get.put(CourseController());
-  final BatchController batchCtrl = Get.put(BatchController());
-
-  String? selectedBranch;
-  String? selectedGroup;
-  String? selectedCourse;
-  String? selectedBatch;
-  String? selectedSubject;
-
-  final List<String> subjects = [
-    "Mathematics",
-    "Physics",
-    "Chemistry",
-    "Biology",
-    "English",
-    "Social Studies",
-    "Computer Science"
-  ];
-
-  @override
-  void initState() {
-    super.initState();
-    branchCtrl.loadBranches();
-  }
+  final AddHomeworkController controller = Get.put(AddHomeworkController());
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +39,7 @@ class _AddAssignmentsPageState extends State<AddAssignmentsPage> {
                     buildTextField(
                       "Homework Title",
                       "Enter Homework Title",
-                      titleController,
+                      controller.titleController,
                     ),
 
                     /// BRANCH
@@ -78,18 +47,14 @@ class _AddAssignmentsPageState extends State<AddAssignmentsPage> {
                       () => buildDropdown(
                         "Branch",
                         "Select Branch",
-                        selectedBranch,
-                        branchCtrl.branches.map((e) => e.branchName).toList(),
+                        controller.branchCtrl.selectedBranch.value?.branchName,
+                        controller.branchCtrl.branches
+                            .map((e) => e.branchName)
+                            .toList(),
                         (val) {
-                          setState(() {
-                            selectedBranch = val;
-                            selectedGroup = null;
-                            selectedCourse = null;
-                            selectedBatch = null;
-                          });
-                          final b = branchCtrl.branches
+                          final b = controller.branchCtrl.branches
                               .firstWhere((e) => e.branchName == val);
-                          groupCtrl.loadGroups(b.id);
+                          controller.branchCtrl.selectedBranch.value = b;
                         },
                       ),
                     ),
@@ -99,17 +64,12 @@ class _AddAssignmentsPageState extends State<AddAssignmentsPage> {
                       () => buildDropdown(
                         "Group",
                         "Select Group",
-                        selectedGroup,
-                        groupCtrl.groups.map((e) => e.name).toList(),
+                        controller.groupCtrl.selectedGroup.value?.name,
+                        controller.groupCtrl.groups.map((e) => e.name).toList(),
                         (val) {
-                          setState(() {
-                            selectedGroup = val;
-                            selectedCourse = null;
-                            selectedBatch = null;
-                          });
-                          final g = groupCtrl.groups
+                          final g = controller.groupCtrl.groups
                               .firstWhere((e) => e.name == val);
-                          courseCtrl.loadCourses(g.id);
+                          controller.groupCtrl.selectedGroup.value = g;
                         },
                       ),
                     ),
@@ -119,16 +79,14 @@ class _AddAssignmentsPageState extends State<AddAssignmentsPage> {
                       () => buildDropdown(
                         "Course",
                         "Select Course",
-                        selectedCourse,
-                        courseCtrl.courses.map((e) => e.courseName).toList(),
+                        controller.courseCtrl.selectedCourse.value?.courseName,
+                        controller.courseCtrl.courses
+                            .map((e) => e.courseName)
+                            .toList(),
                         (val) {
-                          setState(() {
-                            selectedCourse = val;
-                            selectedBatch = null;
-                          });
-                          final c = courseCtrl.courses
+                          final c = controller.courseCtrl.courses
                               .firstWhere((e) => e.courseName == val);
-                          batchCtrl.loadBatches(c.id);
+                          controller.courseCtrl.selectedCourse.value = c;
                         },
                       ),
                     ),
@@ -138,19 +96,32 @@ class _AddAssignmentsPageState extends State<AddAssignmentsPage> {
                       () => buildDropdown(
                         "Batch",
                         "Select Batch",
-                        selectedBatch,
-                        batchCtrl.batches.map((e) => e.batchName).toList(),
-                        (val) => setState(() => selectedBatch = val),
+                        controller.batchCtrl.selectedBatch.value?.batchName,
+                        controller.batchCtrl.batches
+                            .map((e) => e.batchName)
+                            .toList(),
+                        (val) {
+                          final b = controller.batchCtrl.batches
+                              .firstWhere((e) => e.batchName == val);
+                          controller.batchCtrl.selectedBatch.value = b;
+                        },
                       ),
                     ),
 
                     /// SUBJECT
-                    buildDropdown(
-                      "Subject",
-                      "Select Subject",
-                      selectedSubject,
-                      subjects,
-                      (val) => setState(() => selectedSubject = val),
+                    Obx(
+                      () => buildDropdown(
+                        "Subject",
+                        "Select Subject",
+                        controller.selectedSubject.value?.subjectName,
+                        controller.subjects.map((e) => e.subjectName).toList(),
+                        (val) {
+                          final s = controller.subjects
+                              .firstWhere((e) => e.subjectName == val);
+                          controller.selectedSubject.value = s;
+                        },
+                        isLoading: controller.isLoadingSubjects.value,
+                      ),
                     ),
 
                     /// DESCRIPTION
@@ -159,50 +130,37 @@ class _AddAssignmentsPageState extends State<AddAssignmentsPage> {
                     const SizedBox(height: 20),
 
                     /// BUTTON
-                    GestureDetector(
-                      onTap: () {
-                        if (titleController.text.isEmpty ||
-                            selectedBranch == null ||
-                            selectedGroup == null ||
-                            selectedCourse == null ||
-                            selectedBatch == null ||
-                            selectedSubject == null ||
-                            descriptionController.text.isEmpty) {
-                          Get.snackbar(
-                            "Warning",
-                            "Please fill all required fields",
-                            backgroundColor: Colors.orange.shade100,
-                          );
-                          return;
-                        }
-
-                        // Simulate saving
-                        Get.snackbar(
-                          "Success",
-                          "Homework assigned successfully",
-                          backgroundColor: Colors.green.shade100,
-                        );
-                        Future.delayed(const Duration(seconds: 1), () {
-                          Get.back();
-                        });
-                      },
-                      child: Container(
-                        width: double.infinity,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [Color(0xff6A5AE0), Color(0xffB06AB3)],
-                          ),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: const Center(
-                          child: Text(
-                            "Assign Homework",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
+                    Obx(
+                      () => GestureDetector(
+                        onTap: controller.isSaving.value
+                            ? null
+                            : () => controller.saveHomework(),
+                        child: Container(
+                          width: double.infinity,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: controller.isSaving.value
+                                  ? [Colors.grey, Colors.grey]
+                                  : [
+                                      const Color(0xff6A5AE0),
+                                      const Color(0xffB06AB3)
+                                    ],
                             ),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Center(
+                            child: controller.isSaving.value
+                                ? const CircularProgressIndicator(
+                                    color: Colors.white)
+                                : const Text(
+                                    "Assign Homework",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                           ),
                         ),
                       ),
@@ -241,9 +199,7 @@ class _AddAssignmentsPageState extends State<AddAssignmentsPage> {
             ],
           ),
         ),
-
         const SizedBox(height: 6),
-
         TextField(
           controller: controller,
           decoration: InputDecoration(
@@ -256,7 +212,6 @@ class _AddAssignmentsPageState extends State<AddAssignmentsPage> {
             ),
           ),
         ),
-
         const SizedBox(height: 14),
       ],
     );
@@ -268,8 +223,9 @@ class _AddAssignmentsPageState extends State<AddAssignmentsPage> {
     String hint,
     String? value,
     List<String> items,
-    Function(String?) onChanged,
-  ) {
+    Function(String?) onChanged, {
+    bool isLoading = false,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -288,30 +244,38 @@ class _AddAssignmentsPageState extends State<AddAssignmentsPage> {
             ],
           ),
         ),
-
         const SizedBox(height: 6),
-
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(10),
           ),
-          child: DropdownButtonFormField<String>(
-            value: value,
-            hint: Text(hint),
-            isExpanded: true,
-            decoration: const InputDecoration(border: InputBorder.none),
-            items: items.map((String item) {
-              return DropdownMenuItem<String>(
-                value: item,
-                child: Text(item),
-              );
-            }).toList(),
-            onChanged: onChanged,
-          ),
+          child: isLoading
+              ? const SizedBox(
+                  height: 48,
+                  child: Center(
+                    child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  ),
+                )
+              : DropdownButtonFormField<String>(
+                  value: value,
+                  hint: Text(hint),
+                  isExpanded: true,
+                  decoration: const InputDecoration(border: InputBorder.none),
+                  items: items.map((String item) {
+                    return DropdownMenuItem<String>(
+                      value: item,
+                      child: Text(item),
+                    );
+                  }).toList(),
+                  onChanged: onChanged,
+                ),
         ),
-
         const SizedBox(height: 14),
       ],
     );
@@ -334,11 +298,9 @@ class _AddAssignmentsPageState extends State<AddAssignmentsPage> {
             ],
           ),
         ),
-
         const SizedBox(height: 6),
-
         TextField(
-          controller: descriptionController,
+          controller: controller.descriptionController,
           maxLines: 6,
           decoration: InputDecoration(
             filled: true,

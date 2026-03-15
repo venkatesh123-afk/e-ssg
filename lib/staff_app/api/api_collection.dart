@@ -11,7 +11,7 @@ class ApiCollection {
   static const String studentLogin = "/student_login";
 
   // ================= COMMON =================
-  static const String branchList = "/branchlist";
+  static const String branchList = "/getbranchlist";
   static String groupsByBranch(int branchId) => "/groupslistbybranch/$branchId";
   static String coursesByGroup(int groupId) => "/courselistbygroup/$groupId";
   static String batchesByCourse(int courseId) => "/batchlistbycourse/$courseId";
@@ -62,7 +62,7 @@ class ApiCollection {
   static const String myProfile = "/myprofile";
   static String addHostelMember = "/addhostelmember";
   static String editHostelMember = "/edithostelmember";
-  static String deleteHostelMember = "/deletehostelmember";
+  static String deleteHostelMember(String sid) => "/deletehostelmember/$sid";
   static const String assignIncharges = "/assignincharges";
 
   static String feeHeadsByBranch(int branchId) => "/feeheadsbybranch/$branchId";
@@ -72,13 +72,15 @@ class ApiCollection {
 
   // ================= CLASS STUDENTS LIST =================
   static String getStudentsAttendanceList({
-    required int shiftId,
-    required String date,
+    required int branchId,
+    required int groupId,
+    required int courseId,
     required int batchId,
   }) {
     return "/get_students_attendance_list"
-        "?shift=$shiftId"
-        "&date=$date"
+        "?branchid=$branchId"
+        "&groupid=$groupId"
+        "&courseid=$courseId"
         "&batchid=$batchId";
   }
 
@@ -275,9 +277,16 @@ class ApiCollection {
   // ================= SYLLABUS =================
   static const String academicSyllabusList = "/academic_syllabus_list";
   static String subjectsByBatch(int batchId) => "/getsubjectslistbybatch/$batchId";
-  static const String getBranchList = "/getbranchlist";
+  static String showAcademicSyllabus(int id) => "/show_academic_syllabus/$id";
+  static String updateAcademicSyllabusProgress(int id) =>
+      "/update_academic_syllabus_progress/$id";
   static const String storeAcademicSyllabus = "/store_academic_syllabus";
+  static String updateAcademicSyllabus(int id) => "/update_academic_syllabus/$id";
   static String examSyllabusBatches(int examId) => "/examsyllabus/batches/list/$examId";
   static String manageSyllabusSubjects(int examId, int batchId) => "/examsyllabus/subject/list/$examId/$batchId";
   static const String storeSingleExamSyllabus = "/examsyllabus/store-single";
+
+  // ================= HOMEWORK =================
+  static const String homeworkList = "/homework_list";
+  static const String storeHomework = "/storehomework";
 }

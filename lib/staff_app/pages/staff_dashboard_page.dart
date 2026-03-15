@@ -863,13 +863,13 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
                         "Hostel List",
                         () => Get.toNamed('/hostelList'),
                       ),
-                      _buildDrawerSubItem("Rooms", () => Get.toNamed('/rooms')),
+
                       _buildDrawerSubItem(
                         "Floors",
                         () => Get.toNamed('/floors'),
                       ),
                       _buildDrawerSubItem(
-                        "Members",
+                        "Hostel Members",
                         () => Get.toNamed('/hostelMembers'),
                       ),
                       _buildDrawerSubItem(

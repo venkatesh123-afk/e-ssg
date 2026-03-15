@@ -276,8 +276,9 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
             validator:
                 validator ??
                 (value) {
-                  if (value == null || value.isEmpty)
+                  if (value == null || value.isEmpty) {
                     return "Field is required";
+                  }
                   if (value.length < 6) return "Password too short";
                   return null;
                 },

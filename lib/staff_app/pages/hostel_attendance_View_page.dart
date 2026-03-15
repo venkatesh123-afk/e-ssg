@@ -585,148 +585,212 @@ class _HostelAttendanceFilterPageState
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return Dialog(
+              backgroundColor: const Color(0xFFF9FAFB),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(24),
               ),
+              insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
               child: Container(
-                padding: const EdgeInsets.all(20),
-                height: 320,
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          "Check Attendance",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.close),
-                          onPressed: () => Navigator.pop(context),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Obx(() {
-                            return _buildPopupDropdown<BranchModel>(
-                              hint: "Select Branch",
-                              selectedItem: _selectedBranch,
-                              items: branchCtrl.branches.toList(),
-                              displayText: (b) => b.branchName,
-                              onChanged: (val) {
-                                setDialogState(() {
-                                  _onBranchChanged(val);
-                                });
-                              },
-                            );
-                          }),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Obx(() {
-                            return _buildPopupDropdown<HostelModel>(
-                              hint: "Select Hostel",
-                              selectedItem: _selectedHostel,
-                              items: hostelCtrl.hostels.toList(),
-                              displayText: (h) => h.buildingName,
-                              onChanged: (val) {
-                                setDialogState(() {
-                                  _onHostelChanged(val);
-                                });
-                              },
-                            );
-                          }),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Obx(() {
-                            return _buildPopupDropdown<FloorModel>(
-                              hint: "Select Floor",
-                              selectedItem: _selectedFloor,
-                              items: hostelCtrl.floorModels.toList(),
-                              displayText: (f) => f.floorName,
-                              onChanged: (val) {
-                                setDialogState(() {
-                                  _onFloorChanged(val);
-                                });
-                              },
-                            );
-                          }),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () async {
-                              final picked = await showDatePicker(
-                                context: context,
-                                initialDate: _selectedDate,
-                                firstDate: DateTime(2020),
-                                lastDate: DateTime(2030),
-                              );
-                              if (picked != null) {
-                                setDialogState(() {
-                                  setState(() => _selectedDate = picked);
-                                });
-                              }
-                            },
-                            child: _buildSimpleField(
-                              "${_selectedDate.day}-${_selectedDate.month}-${_selectedDate.year}",
+                width: MediaQuery.of(context).size.width,
+                padding: const EdgeInsets.all(24),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            "Check Attendance",
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.w800,
+                              color: Color(0xFF1F2937),
+                              letterSpacing: -0.5,
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    ElevatedButton.icon(
-                      icon: const Icon(Icons.search),
-                      label: const Text("Get Attendance"),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF6C63FF),
-                        foregroundColor: Colors.white,
-                        minimumSize: const Size(double.infinity, 50),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          IconButton(
+                            icon: const Icon(Icons.close_rounded, color: Color(0xFF6B7280)),
+                            onPressed: () => Navigator.pop(context),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+                      
+                      const Text(
+                        "Branch",
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF4B5563),
                         ),
                       ),
-                      onPressed: () async {
-                        if (_selectedBranch == null ||
-                            _selectedHostel == null) {
-                          Get.snackbar(
-                            "Info",
-                            "Please select Branch and Hostel",
-                            backgroundColor: Colors.white,
-                          );
-                          return;
-                        }
-
-                        final String date = _selectedDate
-                            .toIso8601String()
-                            .split('T')[0];
-
-                        await hostelCtrl.loadRoomAttendanceSummary(
-                          branch: _selectedBranch!.id.toString(),
-                          date: date,
-                          hostel: _selectedHostel!.id.toString(),
-                          floor: _selectedFloor?.id.toString() ?? "All",
-                          room: _selectedRoom?.id.toString() ?? "All",
+                      const SizedBox(height: 8),
+                      Obx(() {
+                        return _buildPopupDropdown<BranchModel>(
+                          hint: "Select Branch",
+                          selectedItem: _selectedBranch,
+                          items: branchCtrl.branches.toList(),
+                          displayText: (b) => b.branchName,
+                          onChanged: (val) {
+                            setDialogState(() {
+                              _onBranchChanged(val);
+                            });
+                          },
                         );
+                      }),
+                      const SizedBox(height: 16),
 
-                        if (context.mounted) Navigator.pop(context);
+                      const Text(
+                        "Hostel",
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF4B5563),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Obx(() {
+                        return _buildPopupDropdown<HostelModel>(
+                          hint: "Select Hostel",
+                          selectedItem: _selectedHostel,
+                          items: hostelCtrl.hostels.toList(),
+                          displayText: (h) => h.buildingName,
+                          onChanged: (val) {
+                            setDialogState(() {
+                              _onHostelChanged(val);
+                            });
+                          },
+                        );
+                      }),
+                      const SizedBox(height: 16),
 
-                        Get.toNamed('/hostelAttendanceStatus');
-                      },
-                    ),
-                  ],
+                      const Text(
+                        "Floor",
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF4B5563),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Obx(() {
+                        return _buildPopupDropdown<FloorModel>(
+                          hint: "Select Floor",
+                          selectedItem: _selectedFloor,
+                          items: hostelCtrl.floorModels.toList(),
+                          displayText: (f) => f.floorName,
+                          onChanged: (val) {
+                            setDialogState(() {
+                              _onFloorChanged(val);
+                            });
+                          },
+                        );
+                      }),
+                      const SizedBox(height: 16),
+
+                      const Text(
+                        "Date",
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF4B5563),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      GestureDetector(
+                        onTap: () async {
+                          final picked = await showDatePicker(
+                            context: context,
+                            initialDate: _selectedDate,
+                            firstDate: DateTime(2020),
+                            lastDate: DateTime(2030),
+                          );
+                          if (picked != null) {
+                            setDialogState(() {
+                              setState(() => _selectedDate = picked);
+                            });
+                          }
+                        },
+                        child: _buildSimpleField(
+                          "${_selectedDate.day}-${_selectedDate.month}-${_selectedDate.year}",
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+                      
+                      Container(
+                        width: double.infinity,
+                        height: 56,
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                          ),
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF6366F1).withOpacity(0.3),
+                              blurRadius: 12,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            if (_selectedBranch == null || _selectedHostel == null) {
+                              Get.snackbar(
+                                "Required Fields",
+                                "Please select Branch and Hostel to proceed",
+                                backgroundColor: Colors.white.withOpacity(0.9),
+                                colorText: Colors.red.shade700,
+                                margin: const EdgeInsets.all(16),
+                                borderRadius: 12,
+                                icon: const Icon(Icons.error_outline, color: Colors.red),
+                              );
+                              return;
+                            }
+
+                            final String date = _selectedDate.toIso8601String().split('T')[0];
+
+                            await hostelCtrl.loadRoomAttendanceSummary(
+                              branch: _selectedBranch!.id.toString(),
+                              date: date,
+                              hostel: _selectedHostel!.id.toString(),
+                              floor: _selectedFloor?.id.toString() ?? "All",
+                              room: _selectedRoom?.id.toString() ?? "All",
+                            );
+
+                            if (context.mounted) Navigator.pop(context);
+                            Get.toNamed('/hostelAttendanceStatus');
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.transparent,
+                            shadowColor: Colors.transparent,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.search_rounded, color: Colors.white),
+                              SizedBox(width: 8),
+                              Text(
+                                "Get Attendance",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             );
@@ -744,28 +808,35 @@ class _HostelAttendanceFilterPageState
     required void Function(T?) onChanged,
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
-        color: Colors.grey.shade100,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey.shade300),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFE5E7EB), width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<T>(
           value: selectedItem,
           hint: Text(
             hint,
-            style: const TextStyle(fontSize: 13, color: Colors.grey),
+            style: const TextStyle(fontSize: 14, color: Color(0xFF9CA3AF), fontWeight: FontWeight.w500),
             overflow: TextOverflow.ellipsis,
           ),
           isExpanded: true,
-          icon: const Icon(Icons.keyboard_arrow_down, size: 20),
+          icon: const Icon(Icons.keyboard_arrow_down_rounded, color: Color(0xFF6B7280), size: 24),
           items: items.map((item) {
             return DropdownMenuItem<T>(
               value: item,
               child: Text(
                 displayText(item),
-                style: const TextStyle(fontSize: 13, color: Colors.black87),
+                style: const TextStyle(fontSize: 14, color: Color(0xFF374151), fontWeight: FontWeight.w500),
               ),
             );
           }).toList(),
@@ -777,16 +848,30 @@ class _HostelAttendanceFilterPageState
 
   Widget _buildSimpleField(String label) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       decoration: BoxDecoration(
-        color: Colors.grey.shade100,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey.shade300),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFE5E7EB), width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
-      child: Text(
-        label,
-        style: const TextStyle(fontSize: 13, color: Colors.black87),
-        overflow: TextOverflow.ellipsis,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(fontSize: 14, color: Color(0xFF374151), fontWeight: FontWeight.w500),
+            overflow: TextOverflow.ellipsis,
+          ),
+          const Icon(Icons.calendar_month_rounded, color: Color(0xFF6B7280), size: 20),
+        ],
       ),
     );
   }

@@ -4,6 +4,7 @@ import '../controllers/hostel_controller.dart';
 import '../widgets/skeleton.dart';
 
 import '../widgets/staff_header.dart';
+import '../model/room_attendance_model.dart';
 
 class HostelAttendanceResultPage extends StatefulWidget {
   const HostelAttendanceResultPage({super.key});
@@ -34,17 +35,38 @@ class _HostelAttendanceResultPageState
   Future<void> _loadSummary() async {
     final Map<String, dynamic> args =
         Get.arguments as Map<String, dynamic>? ?? {};
-    await hostelCtrl.loadRoomAttendanceSummary(
-      branch:
-          args['branch']?.toString() ??
-          hostelCtrl.activeBranch.value.toString(),
-      date: args['date'] ?? hostelCtrl.activeDate.value,
-      hostel:
-          args['hostel']?.toString() ??
-          hostelCtrl.activeHostel.value.toString(),
-      floor: args['floor']?.toString() ?? 'All',
-      room: args['room']?.toString() ?? 'All',
-    );
+
+    final String branch =
+        args['branch']?.toString() ?? hostelCtrl.activeBranch.value.toString();
+    final String date = args['date'] ?? hostelCtrl.activeDate.value;
+    final String hostel =
+        args['hostel']?.toString() ?? hostelCtrl.activeHostel.value.toString();
+    final String floor = args['floor']?.toString() ?? 'All';
+    final String room = args['room']?.toString() ?? 'All';
+
+    hostelCtrl.activeBranch.value = branch;
+    hostelCtrl.activeDate.value = date;
+    hostelCtrl.activeHostel.value = hostel;
+    hostelCtrl.activeFloor.value = floor;
+    hostelCtrl.activeFloorName.value = args['floorName']?.toString() ?? floor;
+    hostelCtrl.activeRoomName.value = args['roomName']?.toString() ?? room;
+
+    if (room != 'All') {
+      // If a specific room is selected, load student details
+      await hostelCtrl.loadRoomAttendanceDetails(room);
+      // Also clear summary to avoid confusion
+      hostelCtrl.roomsSummary.clear();
+    } else {
+      // Otherwise load room summary for the floor/hostel
+      hostelCtrl.roomAttendanceDetails.clear();
+      await hostelCtrl.loadRoomAttendanceSummary(
+        branch: branch,
+        date: date,
+        hostel: hostel,
+        floor: floor,
+        room: room,
+      );
+    }
   }
 
   @override
@@ -129,52 +151,55 @@ class _HostelAttendanceResultPageState
                           child: SkeletonList(itemCount: 5),
                         );
                       }
+                      // Use roomAttendanceDetails if available (student-wise), otherwise roomsSummary
+                      final bool isStudentView =
+                          hostelCtrl.roomAttendanceDetails.isNotEmpty;
 
-                      // Dynamic data with Fallback to Image Data if empty
-                      final List<Map<String, dynamic>> data =
-                          hostelCtrl.roomsSummary.isNotEmpty
-                          ? List<Map<String, dynamic>>.from(
-                              hostelCtrl.roomsSummary,
-                            )
-                          : [
-                              {
-                                'room': 'C-201',
-                                'floor': '2nd floor C & D blocks',
-                                'incharge': 'Gosu Abhishek Sagar',
-                                'total': '8',
-                                'present': '0',
-                                'absent': '8',
-                              },
-                              {
-                                'room': 'C-201',
-                                'floor': '2nd floor C & D blocks',
-                                'incharge': 'Gosu Abhishek Sagar',
-                                'total': '8',
-                                'present': '0',
-                                'absent': '8',
-                              },
-                              {
-                                'room': 'C-201',
-                                'floor': '2nd floor C & D blocks',
-                                'incharge': 'Gosu Abhishek Sagar',
-                                'total': '8',
-                                'present': '0',
-                                'absent': '8',
-                              },
-                            ];
+                      final List data =
+                          isStudentView
+                          ? hostelCtrl.roomAttendanceDetails
+                          : (hostelCtrl.roomsSummary.isNotEmpty
+                              ? List.from(hostelCtrl.roomsSummary)
+                              : [
+                                  {
+                                    'room': 'C-201',
+                                    'floor': '2nd floor C & D blocks',
+                                    'incharge': 'Gosu Abhishek Sagar',
+                                    'total': '8',
+                                    'present': '0',
+                                    'absent': '8',
+                                  },
+                                  {
+                                    'room': 'C-201',
+                                    'floor': '2nd floor C & D blocks',
+                                    'incharge': 'Gosu Abhishek Sagar',
+                                    'total': '8',
+                                    'present': '0',
+                                    'absent': '8',
+                                  },
+                                ]);
 
                       final q = _query.toLowerCase();
-                      final filtered = data.where((row) {
-                        final room =
-                            row['room']?.toString().toLowerCase() ?? '';
-                        final floor =
-                            row['floor']?.toString().toLowerCase() ?? '';
-                        final incharge =
-                            row['incharge']?.toString().toLowerCase() ?? '';
+                      final filtered = data.where((item) {
+                        String room = '';
+                        String floor = '';
+                        String searchField = ''; // incharge or student name
+
+                        if (item is RoomAttendanceModel) {
+                          room = hostelCtrl.activeRoomName.value.toLowerCase();
+                          floor = hostelCtrl.activeFloorName.value.toLowerCase();
+                          searchField = item.studentName.toLowerCase();
+                        } else if (item is Map) {
+                          room = item['room']?.toString().toLowerCase() ?? '';
+                          floor = item['floor']?.toString().toLowerCase() ?? '';
+                          searchField =
+                              item['incharge']?.toString().toLowerCase() ?? '';
+                        }
+
                         return q.isEmpty ||
                             room.contains(q) ||
                             floor.contains(q) ||
-                            incharge.contains(q);
+                            searchField.contains(q);
                       }).toList();
 
                       return ListView.builder(
@@ -184,7 +209,7 @@ class _HostelAttendanceResultPageState
                         ),
                         itemCount: filtered.length,
                         itemBuilder: (context, index) => _AttendanceCard(
-                          row: filtered[index],
+                          data: filtered[index],
                           sno: index + 1,
                         ),
                       );
@@ -201,24 +226,95 @@ class _HostelAttendanceResultPageState
 }
 
 class _AttendanceCard extends StatefulWidget {
-  final Map<String, dynamic> row;
+  final dynamic data;
   final int sno;
 
-  const _AttendanceCard({required this.row, required this.sno, super.key});
+  const _AttendanceCard({required this.data, required this.sno, super.key});
 
   @override
   State<_AttendanceCard> createState() => _AttendanceCardState();
 }
 
 class _AttendanceCardState extends State<_AttendanceCard> {
-  String morningStatus = 'P';
-  String nightStatus = 'P';
+  late String morningStatus;
+  late String nightStatus;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeStatus();
+  }
+
+  void _initializeStatus() {
+    if (widget.data is RoomAttendanceModel) {
+      final model = widget.data as RoomAttendanceModel;
+      final hostelCtrl = Get.find<HostelController>();
+      final dateStr = hostelCtrl.activeDate.value;
+
+      String dayKey = "";
+      if (dateStr.isNotEmpty) {
+        try {
+          if (dateStr.contains('-')) {
+            final parts = dateStr.split('-');
+            // handle yyyy-mm-dd or dd-mm-yyyy
+            dayKey = parts.last.length == 4 ? parts.first : parts.last;
+            // remove leading zero
+            dayKey = int.parse(dayKey).toString();
+          }
+        } catch (e) {
+          debugPrint("Date Parsing Error: $e");
+        }
+      }
+
+      final attMap = model.attendanceMap;
+      if (attMap != null && dayKey.isNotEmpty && attMap.containsKey(dayKey)) {
+        final dayData = attMap[dayKey];
+        // User rule: if 'P' then 'P', else 'A'
+        final m = dayData['Morning']?.toString() ?? '';
+        final n = dayData['Night']?.toString() ?? '';
+
+        morningStatus = (m == 'P') ? 'P' : 'A';
+        nightStatus = (n == 'P') ? 'P' : 'A';
+      } else {
+        morningStatus = 'A';
+        nightStatus = 'A';
+      }
+    } else {
+      morningStatus = 'P';
+      nightStatus = 'P';
+    }
+  }
+
+  @override
+  void didUpdateWidget(_AttendanceCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.data != widget.data) {
+      _initializeStatus();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final roomName = widget.row['room']?.toString() ?? '-';
-    final floorName = widget.row['floor']?.toString() ?? '-';
-    final incharge = widget.row['incharge']?.toString() ?? 'N/A';
+    final hostelCtrl = Get.find<HostelController>();
+    String roomName = '-';
+    String floorName = '-';
+    String label = 'Incharge:';
+    String nameValue = 'N/A';
+
+    if (widget.data is RoomAttendanceModel) {
+      final model = widget.data as RoomAttendanceModel;
+      roomName = hostelCtrl.activeRoomName.value.isNotEmpty
+          ? hostelCtrl.activeRoomName.value
+          : model.admno;
+      floorName = hostelCtrl.activeFloorName.value;
+      label = 'Student Name:';
+      nameValue = model.studentName;
+    } else if (widget.data is Map) {
+      roomName = widget.data['room']?.toString() ?? '-';
+      floorName = widget.data['floor']?.toString() ?? '-';
+      label = 'Incharge:';
+      nameValue = widget.data['incharge']?.toString() ?? 'N/A';
+    }
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -272,7 +368,7 @@ class _AttendanceCardState extends State<_AttendanceCard> {
                       children: [
                         _buildLabelValue('floor:', floorName),
                         const SizedBox(height: 8),
-                        _buildLabelValue('Incharge:', incharge),
+                        _buildLabelValue(label, nameValue),
                       ],
                     ),
                   ),

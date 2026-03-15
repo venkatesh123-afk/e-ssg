@@ -34,6 +34,8 @@ class HostelController extends GetxController {
   var activeBranch = "".obs;
   var activeHostel = "".obs;
   var activeFloor = "".obs;
+  var activeFloorName = "".obs;
+  var activeRoomName = "".obs;
   var activeDate = "".obs;
 
   Future<void> loadRoomStudents({
@@ -110,6 +112,26 @@ class HostelController extends GetxController {
       roomModels.assignAll(data.map((e) => RoomModel.fromJson(e)).toList());
     } catch (e) {
       print("LOAD ROOMS ERROR: $e");
+    } finally {
+      isLoading(false);
+    }
+  }
+
+  Future<void> fetchHostelMembers({
+    required String type,
+    required String param,
+  }) async {
+    try {
+      isLoading(true);
+      members.clear();
+      final data = await ApiService.getHostelMembers(
+        type: type,
+        param: param,
+      );
+      members.assignAll(data);
+    } catch (e) {
+      print("FETCH MEMBERS ERROR: $e");
+      Get.snackbar("Error", e.toString());
     } finally {
       isLoading(false);
     }
@@ -292,8 +314,48 @@ class HostelController extends GetxController {
     }
   }
 
+  Future<String?> updateHostelMember({
+    required String sid,
+    required String branch,
+    required String hostel,
+    required String floor,
+    required String room,
+    required String month,
+  }) async {
+    try {
+      isLoading(true);
+      final message = await ApiService.editHostelMember(
+        sid: sid,
+        branch: branch,
+        hostel: hostel,
+        floor: floor,
+        room: room,
+        month: month,
+      );
+      return message;
+    } catch (e) {
+      Get.snackbar("Error", e.toString());
+      return null;
+    } finally {
+      isLoading(false);
+    }
+  }
+
+  Future<String?> removeHostelMember(String sid) async {
+    try {
+      isLoading(true);
+      final message = await ApiService.deleteHostelMember(sid: sid);
+      return message;
+    } catch (e) {
+      Get.snackbar("Error", e.toString());
+      return null;
+    } finally {
+      isLoading(false);
+    }
+  }
+
   Future<void> fetchRoomsByFloor(int floorId) async {
-    // Legacy method, keeping for compatibility if used elsewhere, 
+    // Legacy method, keeping for compatibility if used elsewhere,
     // but the view now uses loadRoomsByFloor with models.
     try {
       isLoading(true);

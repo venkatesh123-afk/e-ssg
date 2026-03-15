@@ -82,4 +82,22 @@ class IconifyIcons {
 
   static const String home =
       '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M6 19h3v-6h6v6h3v-9l-6-4.5L6 10zm-2 2V9l8-6l8 6v12h-7v-6h-2v6zm8-8.75"/></svg>';
+
+  static const String todayIncome =
+      '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M14.5 9h-2V7h-1v2h-2v1h5v2h-5v1h2v2h1v-2h2v-1h-5v-1h5V9m4.5-5H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4l3 3l3-3h4a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2"/></svg>';
+
+  static const String todayExpense =
+      '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M14.5 14h-2v2h-1v-2h-2v-1h5v-2h-5v-1h2v-2h1v2h2v1h-5v1h5v2m4.5-10H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4l3 3l3-3h4a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2"/></svg>';
+
+  static const String doubleArrowDown =
+      '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M11 4h2v12h3l-4 4l-4-4h3V4Z"/></svg>';
+
+  static const String doubleArrowUp =
+      '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M13 20h-2V8h-3l4-4l4 4h-3v12Z"/></svg>';
+
+  static const String totalIncome =
+      '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10s10-4.48 10-10S17.52 2 12 2zm1 14H11v-2H9v-2h2v-1H9V9h2V7h2v2h2v2h-2v1h2v2h-2v2z"/></svg>';
+
+  static const String totalExpense =
+      '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10s10-4.48 10-10S17.52 2 12 2zm1 7h-2v2H9v2h2v1H9v2h2v2h2v-2h2v-2h-2v-1h2V9h-2V7z"/></svg>';
 }

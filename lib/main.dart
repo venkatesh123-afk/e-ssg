@@ -54,7 +54,7 @@ import 'package:student_app/staff_app/pages/take_staff_attendance_page.dart';
 import 'package:student_app/staff_app/pages/hostel_attendance_mark_page.dart';
 import 'package:student_app/staff_app/pages/hostel_attendance_status_page.dart';
 import 'package:student_app/staff_app/pages/add_hostel_attendance_page.dart';
-import 'package:student_app/staff_app/pages/syllabus_batch_wise_page.dart';
+import 'package:student_app/staff_app/pages/exam_syllabus_page.dart';
 import 'package:student_app/staff_app/pages/assignments_page.dart';
 import 'package:student_app/staff_app/pages/add_assignments_page.dart';
 // Student Pages
@@ -208,8 +208,11 @@ class SsJcApp extends StatelessWidget {
           }),
         ),
         GetPage(name: '/syllabus', page: () => const SyllabusPage()),
-        GetPage(name: '/assignments', page: () => const AssignmentsPage()),
-        GetPage(name: '/addAssignments', page: () => const AddAssignmentsPage()),
+        GetPage(name: '/assignments', page: () => AssignmentsPage()),
+        GetPage(
+          name: '/addAssignments',
+          page: () => const AddAssignmentsPage(),
+        ),
 
         // 🎓 STUDENT APP ROUTES
         GetPage(

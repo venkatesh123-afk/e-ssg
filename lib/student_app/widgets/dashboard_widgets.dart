@@ -90,11 +90,7 @@ class ModernStatCard extends StatelessWidget {
                     color: Colors.white.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(15),
                   ),
-                  child: Icon(
-                    icon,
-                    color: Colors.white,
-                    size: 26,
-                  ),
+                  child: Icon(icon, color: Colors.white, size: 26),
                 ),
               ],
             ),
@@ -365,8 +361,9 @@ class AttendanceChart extends StatelessWidget {
                             showTitles: true,
                             getTitlesWidget: (value, meta) {
                               final index = value.toInt();
-                              if (index < 0 || index >= months.length)
+                              if (index < 0 || index >= months.length) {
                                 return const SizedBox();
+                              }
                               return Padding(
                                 padding: const EdgeInsets.only(top: 8),
                                 child: Text(

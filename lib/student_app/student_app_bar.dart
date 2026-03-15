@@ -151,7 +151,7 @@ class StudentAppBar extends StatelessWidget implements PreferredSizeWidget {
                       size: 22,
                       color: Colors.redAccent,
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(width: 12),
                     Text(
                       "Logout",
                       style: TextStyle(

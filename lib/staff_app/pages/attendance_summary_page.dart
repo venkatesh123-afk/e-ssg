@@ -1,31 +1,43 @@
 import 'package:flutter/material.dart';
 import '../widgets/staff_header.dart';
+import '../model/admin_dashboard_attendance_model.dart';
 
 class AttendanceSummaryPage extends StatelessWidget {
-  const AttendanceSummaryPage({super.key});
+  final AttendanceClassSummary? summary;
+  const AttendanceSummaryPage({super.key, this.summary});
 
   @override
   Widget build(BuildContext context) {
+    // If no summary is passed, we could optionally show a message or find the first one from controller
+    final shifts = summary?.shifts ?? {};
+    
     return Scaffold(
       backgroundColor: Colors.white,
       body: Column(
         children: [
-          const StaffHeader(title: "Attendance Summary"),
+          StaffHeader(title: summary?.branchName ?? "Attendance Summary"),
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildAttendanceSection("10AM Attendance"),
-                  const SizedBox(height: 25),
-                  _buildAttendanceSection("1PM Attendance"),
-                  const SizedBox(height: 25),
-                  _buildAttendanceSection("3PM Attendance"),
-                  const SizedBox(height: 25),
-                  _buildAttendanceSection("6PM Attendance"),
-                  const SizedBox(height: 25),
-                  _buildAttendanceSection("9PM Attendance"),
+                  if (shifts.isEmpty)
+                    const Center(
+                      child: Padding(
+                        padding: EdgeInsets.only(top: 100),
+                        child: Text("No attendance data available for this branch."),
+                      ),
+                    ),
+                  ...shifts.values.map((shift) {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 25),
+                      child: _buildAttendanceSection(
+                        "${shift.shiftName ?? "Unknown"} Attendance",
+                        shift,
+                      ),
+                    );
+                  }).toList(),
                   const SizedBox(height: 30),
                 ],
               ),
@@ -36,7 +48,7 @@ class AttendanceSummaryPage extends StatelessWidget {
     );
   }
 
-  Widget _buildAttendanceSection(String title) {
+  Widget _buildAttendanceSection(String title, AttendanceShift shift) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -75,8 +87,8 @@ class AttendanceSummaryPage extends StatelessWidget {
                   vertical: 14,
                   horizontal: 16,
                 ),
-                child: Row(
-                  children: const [
+                child: const Row(
+                  children: [
                     Expanded(flex: 2, child: _HeaderText("Type")),
                     Expanded(child: _HeaderText("Total")),
                     Expanded(child: _HeaderText("Present")),
@@ -85,17 +97,26 @@ class AttendanceSummaryPage extends StatelessWidget {
                 ),
               ),
               // Day Row
-              _buildDataRow("Day", "120", "105", "15"),
+              _buildDataRow(
+                "Day",
+                (shift.day?.total ?? 0).toString(),
+                (shift.day?.present ?? 0).toString(),
+                (shift.day?.absent ?? 0).toString(),
+              ),
               Divider(height: 1, thickness: 1, color: Colors.grey.shade100),
               // Hostel Row
-              _buildDataRow("Hostel", "80", "72", "8"),
+              _buildDataRow(
+                "Hostel",
+                (shift.hostel?.total ?? 0).toString(),
+                (shift.hostel?.present ?? 0).toString(),
+                (shift.hostel?.absent ?? 0).toString(),
+              ),
             ],
           ),
         ),
       ],
     );
   }
-
   Widget _buildDataRow(
     String type,
     String total,

@@ -6,6 +6,7 @@ import '../controllers/hostel_controller.dart';
 import '../model/floor_model.dart';
 import 'add_floor_page.dart';
 import 'floor_students_page.dart';
+import 'Room_page.dart';
 import '../widgets/staff_header.dart';
 
 class FloorsPage extends StatefulWidget {
@@ -362,6 +363,17 @@ class _FloorsPageState extends State<FloorsPage> {
                   () => FloorStudentsPage(
                     floorId: floor.id,
                     floorName: floor.floorName,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              _actionIcon(
+                icon: Icons.door_front_door_outlined,
+                color: const Color(0xFF0D9488),
+                bgColor: const Color(0xFFCCFBF1),
+                onTap: () => Get.to(
+                  () => RoomsPage(
+                    floorId: floor.id,
                   ),
                 ),
               ),

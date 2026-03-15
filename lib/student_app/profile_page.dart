@@ -22,7 +22,7 @@ class _ProfilePageState extends State<ProfilePage> {
   StudentProfile? _profile;
 
   // Mutable Data Lists
-  List<Map<String, dynamic>> _personalData = [
+  final List<Map<String, dynamic>> _personalData = [
     {"label": "First Name", "value": "N/A", "key": "sfname", "required": true},
     {"label": "Last Name", "value": "N/A", "key": "slname", "required": true},
     {
@@ -47,7 +47,7 @@ class _ProfilePageState extends State<ProfilePage> {
     {"label": "Mother Tongue", "value": "N/A", "key": "mother_tongue"},
   ];
 
-  List<Map<String, dynamic>> _contactData = [
+  final List<Map<String, dynamic>> _contactData = [
     {"label": "Mandal", "value": "N/A", "key": "mandal"},
     {"label": "Mother's Mobile", "value": "N/A", "key": "amobile"},
     {"label": "Village/Town", "value": "N/A", "key": "village"},
@@ -63,7 +63,7 @@ class _ProfilePageState extends State<ProfilePage> {
     {"label": "Lsm", "value": "N/A", "key": "lsm"},
   ];
 
-  List<Map<String, dynamic>> _academicData = [
+  final List<Map<String, dynamic>> _academicData = [
     {"label": "10th GPA/Percentage", "value": "N/A", "key": "tenthgpa"},
     {"label": "Religion", "value": "N/A", "key": "religion"},
     {"label": "Last School", "value": "N/A", "key": "lastschool"},
@@ -79,7 +79,7 @@ class _ProfilePageState extends State<ProfilePage> {
     {"label": "Course ID", "value": "N/A", "key": "course_id"},
   ];
 
-  List<Map<String, dynamic>> _admissionData = [
+  final List<Map<String, dynamic>> _admissionData = [
     {"label": "Admission No", "value": "N/A"},
     {"label": "Committed Fee", "value": "₹0"},
     {"label": "Application No", "value": "N/A"},
@@ -204,7 +204,9 @@ class _ProfilePageState extends State<ProfilePage> {
         final key = item['key'];
         if (key != null && modelValues.containsKey(key)) {
           final val = modelValues[key];
-          item['value'] = (val != null && val.toString().isNotEmpty) ? val.toString() : 'N/A';
+          item['value'] = (val != null && val.toString().isNotEmpty)
+              ? val.toString()
+              : 'N/A';
         }
       }
     }
@@ -308,8 +310,6 @@ class _ProfilePageState extends State<ProfilePage> {
       bottomNavigationBar: const StudentBottomNav(currentIndex: 3),
     );
   }
-
-
 
   // ── OVERLAPPING AVATAR ──────────────────────
   Widget _buildOverlappingAvatar() {
@@ -479,19 +479,19 @@ class _ProfilePageState extends State<ProfilePage> {
               if (_profile == null) return;
 
               final Map<String, dynamic> personal = {};
-              _personalData.forEach((item) {
+              for (var item in _personalData) {
                 personal[item['key']] = item['value'];
-              });
+              }
 
               final Map<String, dynamic> academic = {};
-              _academicData.forEach((item) {
+              for (var item in _academicData) {
                 academic[item['key']] = item['value'];
-              });
+              }
 
               final Map<String, dynamic> contact = {};
-              _contactData.forEach((item) {
+              for (var item in _contactData) {
                 contact[item['key']] = item['value'];
-              });
+              }
 
               final result = await Navigator.push(
                 context,

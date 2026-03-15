@@ -88,8 +88,9 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
   }
 
   Widget _buildProfileContent() {
-    if (_studentData == null)
+    if (_studentData == null) {
       return const Center(child: Text("No data available"));
+    }
 
     // Dynamic Data Extraction with Fallbacks
     final name =

@@ -129,17 +129,15 @@ class AdminProAdmissionPage extends GetView<ProDashboardController> {
                     if (controller.momData.value != null)
                       _buildLegend([
                         {
-                          "label":
-                              controller.momData.value!.data.isNotEmpty
-                                  ? controller.momData.value!.data[0].sessionName
-                                  : "Session 1",
+                          "label": controller.momData.value!.data.isNotEmpty
+                              ? controller.momData.value!.data[0].sessionName
+                              : "Session 1",
                           "color": const Color(0xFF4FC3F7),
                         },
                         {
-                          "label":
-                              controller.momData.value!.data.length > 1
-                                  ? controller.momData.value!.data[1].sessionName
-                                  : "Session 2",
+                          "label": controller.momData.value!.data.length > 1
+                              ? controller.momData.value!.data[1].sessionName
+                              : "Session 2",
                           "color": const Color(0xFF78909C),
                         },
                       ]),
@@ -407,8 +405,9 @@ class AdminProAdmissionPage extends GetView<ProDashboardController> {
     double maxTarget = 0;
     for (var item in chartData) {
       if (item.target > maxTarget) maxTarget = item.target.toDouble();
-      if (item.totalAdmissions > maxTarget)
+      if (item.totalAdmissions > maxTarget) {
         maxTarget = item.totalAdmissions.toDouble();
+      }
     }
     double maxY = (maxTarget * 1.2).ceilToDouble();
     if (maxY == 0) maxY = 100;
@@ -418,7 +417,8 @@ class AdminProAdmissionPage extends GetView<ProDashboardController> {
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: SizedBox(
-          width: chartData.length * 80.0 < MediaQuery.of(Get.context!).size.width
+          width:
+              chartData.length * 80.0 < MediaQuery.of(Get.context!).size.width
               ? MediaQuery.of(Get.context!).size.width - 32
               : chartData.length * 80.0,
           child: BarChart(
@@ -438,7 +438,8 @@ class AdminProAdmissionPage extends GetView<ProDashboardController> {
                       ),
                       children: [
                         TextSpan(
-                          text: 'Admissions: ${chartData[groupIndex].totalAdmissions}\n',
+                          text:
+                              'Admissions: ${chartData[groupIndex].totalAdmissions}\n',
                           style: const TextStyle(
                             color: Color(0xFF26A69A),
                             fontWeight: FontWeight.w500,
@@ -466,7 +467,8 @@ class AdminProAdmissionPage extends GetView<ProDashboardController> {
                     reservedSize: 80,
                     interval: 1,
                     getTitlesWidget: (value, meta) {
-                      if (value.toInt() >= 0 && value.toInt() < chartData.length) {
+                      if (value.toInt() >= 0 &&
+                          value.toInt() < chartData.length) {
                         return SideTitleWidget(
                           meta: meta,
                           space: 10,
@@ -525,7 +527,10 @@ class AdminProAdmissionPage extends GetView<ProDashboardController> {
               borderData: FlBorderData(
                 show: true,
                 border: Border(
-                  bottom: BorderSide(color: Colors.grey.withOpacity(0.5), width: 1),
+                  bottom: BorderSide(
+                    color: Colors.grey.withOpacity(0.5),
+                    width: 1,
+                  ),
                   left: const BorderSide(color: Colors.transparent),
                   right: const BorderSide(color: Colors.transparent),
                   top: const BorderSide(color: Colors.transparent),
@@ -536,7 +541,9 @@ class AdminProAdmissionPage extends GetView<ProDashboardController> {
                 final total = item.totalAdmissions.toDouble();
                 final target = item.target.toDouble();
 
-                final remainingTarget = (target > total) ? (target - total) : 0.0;
+                final remainingTarget = (target > total)
+                    ? (target - total)
+                    : 0.0;
 
                 return BarChartGroupData(
                   x: index,
@@ -583,8 +590,9 @@ class AdminProAdmissionPage extends GetView<ProDashboardController> {
     double maxAdmissions = 0;
     for (var pro in chartData) {
       for (var history in pro.history) {
-        if (history.admissions > maxAdmissions)
+        if (history.admissions > maxAdmissions) {
           maxAdmissions = history.admissions.toDouble();
+        }
       }
     }
     double maxY = (maxAdmissions * 1.2).ceilToDouble();
@@ -595,7 +603,8 @@ class AdminProAdmissionPage extends GetView<ProDashboardController> {
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: SizedBox(
-          width: chartData.length * 100.0 < MediaQuery.of(Get.context!).size.width
+          width:
+              chartData.length * 100.0 < MediaQuery.of(Get.context!).size.width
               ? MediaQuery.of(Get.context!).size.width - 32
               : chartData.length * 100.0,
           child: BarChart(
@@ -644,7 +653,8 @@ class AdminProAdmissionPage extends GetView<ProDashboardController> {
                     reservedSize: 80,
                     interval: 1,
                     getTitlesWidget: (value, meta) {
-                      if (value.toInt() >= 0 && value.toInt() < chartData.length) {
+                      if (value.toInt() >= 0 &&
+                          value.toInt() < chartData.length) {
                         return SideTitleWidget(
                           meta: meta,
                           space: 10,
@@ -703,7 +713,10 @@ class AdminProAdmissionPage extends GetView<ProDashboardController> {
               borderData: FlBorderData(
                 show: true,
                 border: Border(
-                  bottom: BorderSide(color: Colors.grey.withOpacity(0.5), width: 1),
+                  bottom: BorderSide(
+                    color: Colors.grey.withOpacity(0.5),
+                    width: 1,
+                  ),
                   left: const BorderSide(color: Colors.transparent),
                   right: const BorderSide(color: Colors.transparent),
                   top: const BorderSide(color: Colors.transparent),
@@ -792,8 +805,8 @@ class AdminProAdmissionPage extends GetView<ProDashboardController> {
                 double total = 0;
                 for (int s = 0; s < sessions.length; s++) {
                   if (groupIndex < sessions[s].months.length) {
-                    double val =
-                        sessions[s].months[groupIndex].count.toDouble();
+                    double val = sessions[s].months[groupIndex].count
+                        .toDouble();
                     if (val > 0) {
                       lines.add(
                         TextSpan(
@@ -935,4 +948,3 @@ class AdminProAdmissionPage extends GetView<ProDashboardController> {
     );
   }
 }
-

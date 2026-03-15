@@ -3,15 +3,19 @@ import 'package:get/get.dart';
 import 'assign_incharge_page.dart';
 import 'add_room_page.dart';
 import '../widgets/staff_header.dart';
+import '../controllers/hostel_controller.dart';
+import '../model/room_model.dart';
 
 class RoomsPage extends StatefulWidget {
-  const RoomsPage({super.key});
+  final int? floorId;
+  const RoomsPage({super.key, this.floorId});
 
   @override
   State<RoomsPage> createState() => _RoomsPageState();
 }
 
 class _RoomsPageState extends State<RoomsPage> {
+  final HostelController hostelCtrl = Get.find<HostelController>();
   String _query = '';
 
   // ================= UI Constants =================
@@ -20,51 +24,16 @@ class _RoomsPageState extends State<RoomsPage> {
   static const Color cardPurple = Color(0xFF8A5CF5);
   static const Color badgeBlue = Color(0xFFD7E5FF);
 
-  // ROOM DATA
-  final List<Map<String, String>> _rooms = [
-    {
-      'room': 'G3',
-      'category': 'Girls Hostel',
-      'phone': '91776162696',
-      'floor': 'Ground Floor',
-      'hostel': 'SSG EAMCET CAMPUS',
-      'branch': 'SSJC-SSG EAMCET CAMPUS',
-    },
-    {
-      'room': 'G3',
-      'category': 'Girls Hostel',
-      'phone': '91776162696',
-      'floor': 'Ground Floor',
-      'hostel': 'SSG EAMCET CAMPUS',
-      'branch': 'SSJC-SSG EAMCET CAMPUS',
-    },
-    {
-      'room': 'G3',
-      'category': 'Girls Hostel',
-      'phone': '91776162696',
-      'floor': 'Ground Floor',
-      'hostel': 'SSG EAMCET CAMPUS',
-      'branch': 'SSJC-SSG EAMCET CAMPUS',
-    },
-    {
-      'room': 'G3',
-      'category': 'Girls Hostel',
-      'phone': '91776162696',
-      'floor': 'Ground Floor',
-      'hostel': 'SSG EAMCET CAMPUS',
-      'branch': 'SSJC-SSG EAMCET CAMPUS',
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    if (widget.floorId != null) {
+      hostelCtrl.loadRoomsByFloor(widget.floorId!);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final filtered = _rooms.where((r) {
-      final searchLower = _query.toLowerCase();
-      return r['room']!.toLowerCase().contains(searchLower) ||
-          r['floor']!.toLowerCase().contains(searchLower) ||
-          r['hostel']!.toLowerCase().contains(searchLower);
-    }).toList();
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: Column(
@@ -107,11 +76,33 @@ class _RoomsPageState extends State<RoomsPage> {
                 color: lavenderBg.withOpacity(0.5),
                 borderRadius: BorderRadius.circular(30),
               ),
-              child: ListView.builder(
-                padding: const EdgeInsets.all(16),
-                itemCount: filtered.length,
-                itemBuilder: (context, i) => _roomCard(context, filtered[i]),
-              ),
+              child: Obx(() {
+                if (hostelCtrl.isLoading.value) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                final filtered = hostelCtrl.roomModels.where((r) {
+                  final searchLower = _query.toLowerCase();
+                  return r.roomName.toLowerCase().contains(searchLower) ||
+                      (r.floorName?.toLowerCase().contains(searchLower) ?? false) ||
+                      (r.hostelName?.toLowerCase().contains(searchLower) ?? false);
+                }).toList();
+
+                if (filtered.isEmpty) {
+                  return const Center(
+                    child: Text(
+                      "No rooms found",
+                      style: TextStyle(color: Colors.black54),
+                    ),
+                  );
+                }
+
+                return ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: filtered.length,
+                  itemBuilder: (context, i) => _roomCard(context, filtered[i]),
+                );
+              }),
             ),
           ),
 
@@ -126,7 +117,7 @@ class _RoomsPageState extends State<RoomsPage> {
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black12, // Keeping keeping color for distinction
+                  color: Colors.black12,
                   blurRadius: 10,
                   offset: Offset(0, -2),
                 ),
@@ -137,7 +128,7 @@ class _RoomsPageState extends State<RoomsPage> {
                 Expanded(
                   child: _gradientButton(
                     onTap: () => Get.to(() => const AssignInchargePage()),
-                    colors: [Color(0xFF7D74FC), Color(0xFFD08EF7)],
+                    colors: const [Color(0xFF7D74FC), Color(0xFFD08EF7)],
                     icon: Icons.check_circle_outline,
                     label: "Assign Incharge",
                   ),
@@ -146,7 +137,7 @@ class _RoomsPageState extends State<RoomsPage> {
                 Expanded(
                   child: _gradientButton(
                     onTap: () => Get.to(() => const AddRoomPage()),
-                    colors: [Color(0xFF3FAFB9), Color(0xFFAED160)],
+                    colors: const [Color(0xFF3FAFB9), Color(0xFFAED160)],
                     icon: Icons.add,
                     label: "Add New Room",
                   ),
@@ -159,7 +150,7 @@ class _RoomsPageState extends State<RoomsPage> {
     );
   }
 
-  Widget _roomCard(BuildContext context, Map<String, String> data) {
+  Widget _roomCard(BuildContext context, RoomModel data) {
     return Container(
       margin: const EdgeInsets.only(bottom: 15),
       decoration: BoxDecoration(
@@ -180,7 +171,7 @@ class _RoomsPageState extends State<RoomsPage> {
             Container(
               width: 12,
               decoration: const BoxDecoration(
-                color: Color(0xFF818CF8), // Specific purple from image
+                color: Color(0xFF818CF8),
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(22),
                   bottomLeft: Radius.circular(22),
@@ -205,7 +196,7 @@ class _RoomsPageState extends State<RoomsPage> {
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            data['room']!,
+                            data.roomName,
                             style: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -223,7 +214,7 @@ class _RoomsPageState extends State<RoomsPage> {
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Text(
-                            data['category']!,
+                            data.hostelName ?? "N/A",
                             style: const TextStyle(
                               color: Color(0xFF5A7DC6),
                               fontSize: 12,
@@ -234,17 +225,17 @@ class _RoomsPageState extends State<RoomsPage> {
                       ],
                     ),
                     const SizedBox(height: 12),
-                    Row(
+                    const Row(
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.phone,
                           color: Color(0xFF5A7DC6),
                           size: 18,
                         ),
-                        const SizedBox(width: 8),
+                        SizedBox(width: 8),
                         Text(
-                          data['phone']!,
-                          style: const TextStyle(
+                          "N/A", // Phone not directly in RoomModel, keeping as placeholder
+                          style: TextStyle(
                             color: Colors.black54,
                             fontWeight: FontWeight.w500,
                           ),
@@ -255,11 +246,11 @@ class _RoomsPageState extends State<RoomsPage> {
                       padding: EdgeInsets.symmetric(vertical: 12),
                       child: Divider(height: 1, thickness: 0.5),
                     ),
-                    _infoRow("Floor", data['floor']!),
+                    _infoRow("Floor", data.floorName ?? "N/A"),
                     const SizedBox(height: 6),
-                    _infoRow("Hostel", data['hostel']!),
+                    _infoRow("Hostel", data.hostelName ?? "N/A"),
                     const SizedBox(height: 6),
-                    _infoRow("Branch", data['branch']!),
+                    _infoRow("Branch", data.branchName ?? "N/A"),
                   ],
                 ),
               ),

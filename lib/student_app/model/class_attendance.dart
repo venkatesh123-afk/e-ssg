@@ -191,9 +191,9 @@ class MonthlyClassAttendance {
           final dayStr = key.substring(4);
           final status = value.toString().toUpperCase();
 
-          if (status == 'P')
+          if (status == 'P') {
             sp++;
-          else if (status == 'A')
+          } else if (status == 'A')
             sa++;
           else if (status == 'L')
             sl++;

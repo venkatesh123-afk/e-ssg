@@ -13,5 +13,5 @@ class GroupModel {
     );
   }
 
-  String? get groupName => null;
+  String get groupName => name;
 }
