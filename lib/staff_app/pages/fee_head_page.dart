@@ -5,6 +5,8 @@ import 'package:student_app/staff_app/controllers/fee_controller.dart';
 import 'package:student_app/staff_app/controllers/main_controller.dart';
 import 'package:student_app/staff_app/widgets/skeleton.dart';
 import 'package:student_app/staff_app/widgets/staff_bottom_nav_bar.dart';
+import 'package:student_app/admin_app/admin_bottom_nav_bar.dart';
+import 'package:student_app/staff_app/utils/get_storage.dart';
 import '../widgets/staff_header.dart';
 
 final TextEditingController searchCtrl = TextEditingController();
@@ -27,7 +29,17 @@ class _FeeHeadPageState extends State<FeeHeadPage> {
   void initState() {
     super.initState();
     branchCtrl.loadBranches();
-    Get.put(StaffMainController(), permanent: true).changeIndex(2);
+    
+    final role = AppStorage.getUserRole()?.toLowerCase() ?? '';
+    if (role == 'superadmin' || role == 'admin') {
+      if (Get.isRegistered<AdminMainController>()) {
+        Get.find<AdminMainController>().changeIndex(2);
+      } else {
+        Get.put(AdminMainController(), permanent: true).changeIndex(2);
+      }
+    } else {
+      Get.put(StaffMainController(), permanent: true).changeIndex(2);
+    }
   }
 
   @override
@@ -211,8 +223,16 @@ class _FeeHeadPageState extends State<FeeHeadPage> {
           ),
         ],
       ),
-      bottomNavigationBar: const StaffBottomNavBar(),
+      bottomNavigationBar: _buildBottomNav(),
     );
+  }
+
+  Widget _buildBottomNav() {
+    final role = AppStorage.getUserRole()?.toLowerCase() ?? '';
+    if (role == 'superadmin' || role == 'admin') {
+      return const AdminBottomNavBar();
+    }
+    return const StaffBottomNavBar();
   }
 
   Widget _buildFeeItem(fee, BuildContext context) {

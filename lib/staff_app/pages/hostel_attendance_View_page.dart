@@ -589,7 +589,10 @@ class _HostelAttendanceFilterPageState
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(24),
               ),
-              insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+              insetPadding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 24,
+              ),
               child: Container(
                 width: MediaQuery.of(context).size.width,
                 padding: const EdgeInsets.all(24),
@@ -611,13 +614,16 @@ class _HostelAttendanceFilterPageState
                             ),
                           ),
                           IconButton(
-                            icon: const Icon(Icons.close_rounded, color: Color(0xFF6B7280)),
+                            icon: const Icon(
+                              Icons.close_rounded,
+                              color: Color(0xFF6B7280),
+                            ),
                             onPressed: () => Navigator.pop(context),
                           ),
                         ],
                       ),
                       const SizedBox(height: 24),
-                      
+
                       const Text(
                         "Branch",
                         style: TextStyle(
@@ -718,7 +724,7 @@ class _HostelAttendanceFilterPageState
                         ),
                       ),
                       const SizedBox(height: 32),
-                      
+
                       Container(
                         width: double.infinity,
                         height: 56,
@@ -739,7 +745,8 @@ class _HostelAttendanceFilterPageState
                         ),
                         child: ElevatedButton(
                           onPressed: () async {
-                            if (_selectedBranch == null || _selectedHostel == null) {
+                            if (_selectedBranch == null ||
+                                _selectedHostel == null) {
                               Get.snackbar(
                                 "Required Fields",
                                 "Please select Branch and Hostel to proceed",
@@ -747,12 +754,17 @@ class _HostelAttendanceFilterPageState
                                 colorText: Colors.red.shade700,
                                 margin: const EdgeInsets.all(16),
                                 borderRadius: 12,
-                                icon: const Icon(Icons.error_outline, color: Colors.red),
+                                icon: const Icon(
+                                  Icons.error_outline,
+                                  color: Colors.red,
+                                ),
                               );
                               return;
                             }
 
-                            final String date = _selectedDate.toIso8601String().split('T')[0];
+                            final String date = _selectedDate
+                                .toIso8601String()
+                                .split('T')[0];
 
                             await hostelCtrl.loadRoomAttendanceSummary(
                               branch: _selectedBranch!.id.toString(),
@@ -826,17 +838,29 @@ class _HostelAttendanceFilterPageState
           value: selectedItem,
           hint: Text(
             hint,
-            style: const TextStyle(fontSize: 14, color: Color(0xFF9CA3AF), fontWeight: FontWeight.w500),
+            style: const TextStyle(
+              fontSize: 14,
+              color: Color(0xFF9CA3AF),
+              fontWeight: FontWeight.w500,
+            ),
             overflow: TextOverflow.ellipsis,
           ),
           isExpanded: true,
-          icon: const Icon(Icons.keyboard_arrow_down_rounded, color: Color(0xFF6B7280), size: 24),
+          icon: const Icon(
+            Icons.keyboard_arrow_down_rounded,
+            color: Color(0xFF6B7280),
+            size: 24,
+          ),
           items: items.map((item) {
             return DropdownMenuItem<T>(
               value: item,
               child: Text(
                 displayText(item),
-                style: const TextStyle(fontSize: 14, color: Color(0xFF374151), fontWeight: FontWeight.w500),
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: Color(0xFF374151),
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             );
           }).toList(),
@@ -867,10 +891,18 @@ class _HostelAttendanceFilterPageState
         children: [
           Text(
             label,
-            style: const TextStyle(fontSize: 14, color: Color(0xFF374151), fontWeight: FontWeight.w500),
+            style: const TextStyle(
+              fontSize: 14,
+              color: Color(0xFF374151),
+              fontWeight: FontWeight.w500,
+            ),
             overflow: TextOverflow.ellipsis,
           ),
-          const Icon(Icons.calendar_month_rounded, color: Color(0xFF6B7280), size: 20),
+          const Icon(
+            Icons.calendar_month_rounded,
+            color: Color(0xFF6B7280),
+            size: 20,
+          ),
         ],
       ),
     );

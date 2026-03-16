@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../controllers/profile_controller.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
-import '../utils/iconify_icons.dart';
+import 'package:student_app/staff_app/utils/iconify_icons.dart';
 
-class StaffBottomNavBar extends StatelessWidget {
-  const StaffBottomNavBar({super.key});
+class AdminMainController extends GetxController {
+  var currentIndex = 0.obs;
+  void changeIndex(int index) => currentIndex.value = index;
+}
+
+class AdminBottomNavBar extends StatelessWidget {
+  const AdminBottomNavBar({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final ProfileController controller = Get.put(
-      ProfileController(),
-      permanent: true,
-    );
+    final AdminMainController controller = Get.isRegistered<AdminMainController>()
+        ? Get.find<AdminMainController>()
+        : Get.put(AdminMainController(), permanent: true);
 
     return Obx(() {
       return Container(
@@ -21,8 +24,8 @@ class StaffBottomNavBar extends StatelessWidget {
         decoration: const BoxDecoration(
           color: Color(0xFF7C3FE3), // Persistent Purple
           borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(35),
-            topRight: Radius.circular(35),
+            topLeft: Radius.circular(30),
+            topRight: Radius.circular(30),
           ),
           boxShadow: [
             BoxShadow(
@@ -42,7 +45,12 @@ class StaffBottomNavBar extends StatelessWidget {
               "Attendance",
               controller,
             ),
-            _buildNavItem(2, IconifyIcons.feed32Filled, "Fees", controller),
+            _buildNavItem(
+              2,
+              IconifyIcons.feed32Filled,
+              "Fees",
+              controller,
+            ),
             _buildNavItem(3, IconifyIcons.account, "Profile", controller),
           ],
         ),
@@ -54,7 +62,7 @@ class StaffBottomNavBar extends StatelessWidget {
     int index,
     String icon,
     String label,
-    ProfileController controller,
+    AdminMainController controller,
   ) {
     bool isSelected = controller.currentIndex.value == index;
     return GestureDetector(
@@ -64,7 +72,7 @@ class StaffBottomNavBar extends StatelessWidget {
 
         switch (index) {
           case 0:
-            Get.offAllNamed('/dashboard');
+            Get.offAllNamed('/adminDashboard');
             break;
           case 1:
             Get.offAllNamed('/attendanceOptions');
@@ -79,29 +87,28 @@ class StaffBottomNavBar extends StatelessWidget {
       },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
         decoration: BoxDecoration(
           color: isSelected
-              ? Colors.white.withOpacity(0.2)
+              ? Colors.white.withOpacity(0.35)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Iconify(
               icon,
-              color: isSelected ? Colors.white : Colors.white.withOpacity(0.7),
-              size: 26,
+              color: Colors.white,
+              size: 28,
             ),
             const SizedBox(height: 4),
             Text(
               label,
               style: TextStyle(
-                color: isSelected
-                    ? Colors.white
-                    : Colors.white.withOpacity(0.7),
-                fontSize: 12,
+                color: Colors.white,
+                fontSize: 13,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
               ),
             ),

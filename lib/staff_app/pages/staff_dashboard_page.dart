@@ -27,6 +27,7 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
   List<Map<String, dynamic>> _searchResults = [];
   bool _isSearching = false;
   bool _isSearchingInAppBar = false;
+  bool _showSearchBar = false;
 
   @override
   void initState() {
@@ -187,7 +188,7 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
           icon: const Icon(Icons.search, color: Colors.white),
           onPressed: () {
             setState(() {
-              _isSearchingInAppBar = true;
+              _showSearchBar = !_showSearchBar;
             });
           },
         ),
@@ -226,7 +227,28 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
                 Get.to(() => const ProfilePage());
                 break;
               case 'logout':
-                Get.find<AuthController>().logout();
+                Get.dialog(
+                  AlertDialog(
+                    title: const Text("Logout"),
+                    content: const Text("Are you sure you want to logout?"),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Get.back(),
+                        child: const Text("Cancel"),
+                      ),
+                      TextButton(
+                        onPressed: () async {
+                          Get.back();
+                          await Get.find<AuthController>().logout();
+                        },
+                        child: const Text(
+                          "Logout",
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
                 break;
             }
           },
@@ -357,6 +379,10 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
                 ),
               ],
             ),
+            if (_showSearchBar) ...[
+              const SizedBox(height: 15),
+              _buildDashboardSearchBar(),
+            ],
 
             if (_isSearching)
               const Center(
@@ -791,14 +817,9 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
                     icon:
                         IconifyIcons.phStudent, // Student Cap Icon from Image 3
                     title: "Pro Dashboard",
-                    onTap: () => Get.toNamed('/proAdmission'),
+                    onTap: () => Get.toNamed('/staffAdmission'),
                   ),
-                  _buildDrawerPillItem(
-                    icon:
-                        IconifyIcons.phStudent, // Student Cap Icon from Image 3
-                    title: "Adm Dashboard",
-                    onTap: () => Get.toNamed('/adminDashboard'),
-                  ),
+
                   _buildExpandableDrawerItem(
                     icon: IconifyIcons
                         .clarityFormLine, // Form/Exams Icon from Image 1
@@ -869,7 +890,7 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
                         () => Get.toNamed('/floors'),
                       ),
                       _buildDrawerSubItem(
-                        "Hostel Members",
+                        "Members",
                         () => Get.toNamed('/hostelMembers'),
                       ),
                       _buildDrawerSubItem(
@@ -901,11 +922,7 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
                       ),
                     ],
                   ),
-                  _buildDrawerPillItem(
-                    icon: IconifyIcons.clarityFormLine,
-                    title: "Homework",
-                    onTap: () => Get.toNamed('/assignments'),
-                  ),
+
                   _buildDrawerPillItem(
                     icon:
                         IconifyIcons.phChatDots, // Chat Dots Icon from Image 5
@@ -1096,6 +1113,57 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
           color: Colors.black54,
           fontWeight: FontWeight.w600,
         ),
+      ),
+    );
+  }
+
+  Widget _buildDashboardSearchBar() {
+    return Container(
+      height: 50,
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.2),
+        borderRadius: BorderRadius.circular(25),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 15),
+      child: Row(
+        children: [
+          const Icon(Icons.search, color: Colors.white, size: 20),
+          const SizedBox(width: 10),
+          Expanded(
+            child: TextField(
+              controller: _searchController,
+              autofocus: true,
+              style: const TextStyle(color: Colors.white, fontSize: 14),
+              decoration: const InputDecoration(
+                hintText: "Search Student...",
+                hintStyle: TextStyle(color: Colors.white70, fontSize: 14),
+                border: InputBorder.none,
+                isDense: true,
+              ),
+              onChanged: (value) {
+                if (value.length >= 3) {
+                  _handleSearch();
+                } else if (value.isEmpty) {
+                  setState(() {
+                    _searchResults = [];
+                  });
+                }
+              },
+              onSubmitted: (value) => _handleSearch(),
+            ),
+          ),
+          if (_searchController.text.isNotEmpty)
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  _searchController.clear();
+                  _searchResults = [];
+                });
+              },
+              child: const Icon(Icons.clear, color: Colors.white70, size: 20),
+            ),
+        ],
       ),
     );
   }

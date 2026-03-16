@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:get/get.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
-import '../widgets/staff_header.dart';
-import '../utils/iconify_icons.dart';
-import '../controllers/pro_dashboard_controller.dart';
-import '../widgets/skeleton.dart';
+import 'package:student_app/admin_app/admin_header.dart';
+import 'package:student_app/staff_app/controllers/pro_dashboard_controller.dart';
+import 'package:student_app/staff_app/utils/iconify_icons.dart';
+import 'package:student_app/staff_app/widgets/skeleton.dart';
 
 class AdminProAdmissionPage extends GetView<ProDashboardController> {
   const AdminProAdmissionPage({super.key});
@@ -18,28 +18,10 @@ class AdminProAdmissionPage extends GetView<ProDashboardController> {
             controller.dashboardData.value == null) {
           return Column(
             children: [
-              const StaffHeader(title: "Pro Admission"),
+              const AdminHeader(title: "Pro Admission"),
               Expanded(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    children: [
-                      Wrap(
-                        spacing: 12,
-                        runSpacing: 12,
-                        children: List.generate(
-                          10,
-                          (index) => SkeletonLoader.card(
-                            height:
-                                (MediaQuery.of(context).size.width - 44) /
-                                2 /
-                                1.7,
-                            width: (MediaQuery.of(context).size.width - 44) / 2,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                child: Center(
+                  child: SkeletonLoader(),
                 ),
               ),
             ],
@@ -49,7 +31,7 @@ class AdminProAdmissionPage extends GetView<ProDashboardController> {
         if (controller.dashboardData.value == null) {
           return Column(
             children: [
-              const StaffHeader(title: "Pro Admission"),
+              const AdminHeader(title: "Pro Admission"),
               Expanded(
                 child: Center(
                   child: Text(
@@ -69,7 +51,7 @@ class AdminProAdmissionPage extends GetView<ProDashboardController> {
 
         return Column(
           children: [
-            const StaffHeader(title: "Pro Admission"),
+            const AdminHeader(title: "Pro Admission"),
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(

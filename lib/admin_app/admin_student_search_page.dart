@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../widgets/staff_header.dart';
+import 'package:student_app/admin_app/admin_header.dart';
 import 'admin_student_details_page.dart';
 
 class StudentSearchPage extends StatefulWidget {
@@ -19,7 +19,7 @@ class _StudentSearchPageState extends State<StudentSearchPage> {
       backgroundColor: Colors.white,
       body: Column(
         children: [
-          const StaffHeader(title: 'Search'),
+          const AdminHeader(title: 'Search'),
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -37,9 +37,15 @@ class _StudentSearchPageState extends State<StudentSearchPage> {
                     ),
                   ),
                   const SizedBox(height: 15),
-                  _buildRecentSearchCard('USTUMURI RAMAKRISHNA REDDY', '252148'),
+                  _buildRecentSearchCard(
+                    'USTUMURI RAMAKRISHNA REDDY',
+                    '252148',
+                  ),
                   const SizedBox(height: 15),
-                  _buildRecentSearchCard('USTUMURI RAMAKRISHNA REDDY', '252148'),
+                  _buildRecentSearchCard(
+                    'USTUMURI RAMAKRISHNA REDDY',
+                    '252148',
+                  ),
                 ],
               ),
             ),
@@ -61,7 +67,8 @@ class _StudentSearchPageState extends State<StudentSearchPage> {
         controller: _searchController,
         decoration: const InputDecoration(
           prefixIcon: Icon(Icons.search, color: Colors.black54),
-          hintText: 'Type a Kayword.....', // Intentional typo to match image "Kayword"
+          hintText:
+              'Type a Kayword.....', // Intentional typo to match image "Kayword"
           hintStyle: TextStyle(color: Colors.black45, fontSize: 16),
           border: InputBorder.none,
           contentPadding: EdgeInsets.symmetric(vertical: 15),
@@ -104,10 +111,7 @@ class _StudentSearchPageState extends State<StudentSearchPage> {
             const SizedBox(height: 6),
             Text(
               'Admission No. :$admissionNo',
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.black54,
-              ),
+              style: const TextStyle(fontSize: 14, color: Colors.black54),
             ),
           ],
         ),

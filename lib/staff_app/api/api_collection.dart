@@ -276,14 +276,18 @@ class ApiCollection {
 
   // ================= SYLLABUS =================
   static const String academicSyllabusList = "/academic_syllabus_list";
-  static String subjectsByBatch(int batchId) => "/getsubjectslistbybatch/$batchId";
+  static String subjectsByBatch(int batchId) =>
+      "/getsubjectslistbybatch/$batchId";
   static String showAcademicSyllabus(int id) => "/show_academic_syllabus/$id";
   static String updateAcademicSyllabusProgress(int id) =>
       "/update_academic_syllabus_progress/$id";
   static const String storeAcademicSyllabus = "/store_academic_syllabus";
-  static String updateAcademicSyllabus(int id) => "/update_academic_syllabus/$id";
-  static String examSyllabusBatches(int examId) => "/examsyllabus/batches/list/$examId";
-  static String manageSyllabusSubjects(int examId, int batchId) => "/examsyllabus/subject/list/$examId/$batchId";
+  static String updateAcademicSyllabus(int id) =>
+      "/update_academic_syllabus/$id";
+  static String examSyllabusBatches(int examId) =>
+      "/examsyllabus/batches/list/$examId";
+  static String manageSyllabusSubjects(int examId, int batchId) =>
+      "/examsyllabus/subject/list/$examId/$batchId";
   static const String storeSingleExamSyllabus = "/examsyllabus/store-single";
 
   // ================= HOMEWORK =================

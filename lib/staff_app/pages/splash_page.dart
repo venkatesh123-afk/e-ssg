@@ -89,7 +89,7 @@ class _SplashPageState extends State<SplashPage> {
                       ],
                     ),
                     child: Image.asset(
-                      'assets/icon/splash_screen.gif',
+                      'assets/logo gif.gif',
                       width: 150,
                       height: 150,
                       fit: BoxFit.contain,

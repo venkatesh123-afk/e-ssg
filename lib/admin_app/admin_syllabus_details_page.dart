@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import '../widgets/staff_header.dart';
-
-import '../model/syllabus_model.dart';
+import 'package:student_app/admin_app/admin_header.dart';
+import 'package:student_app/staff_app/model/syllabus_model.dart';
 
 class SyllabusDetailsPage extends StatelessWidget {
   final SyllabusModel syllabus;
@@ -14,7 +13,7 @@ class SyllabusDetailsPage extends StatelessWidget {
       body: Column(
         children: [
           /// HEADER
-          const StaffHeader(title: "Syllabus Details"),
+          const AdminHeader(title: "Syllabus Details"),
 
           const SizedBox(height: 20),
 

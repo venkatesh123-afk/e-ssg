@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:student_app/staff_app/controllers/profile_controller.dart';
 import 'package:student_app/staff_app/widgets/staff_bottom_nav_bar.dart';
+import 'package:student_app/admin_app/admin_bottom_nav_bar.dart';
+import 'package:student_app/admin_app/admin_header.dart';
+import 'package:student_app/staff_app/utils/get_storage.dart';
 import '../widgets/staff_header.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -43,6 +46,15 @@ class _ProfilePageState extends State<ProfilePage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.fetchProfile();
       controller.changeIndex(3);
+
+      final role = AppStorage.getUserRole()?.toLowerCase() ?? '';
+      if (role == 'superadmin' || role == 'admin') {
+        if (Get.isRegistered<AdminMainController>()) {
+          Get.find<AdminMainController>().changeIndex(3);
+        } else {
+          Get.put(AdminMainController(), permanent: true).changeIndex(3);
+        }
+      }
     });
   }
 
@@ -57,7 +69,7 @@ class _ProfilePageState extends State<ProfilePage> {
           body: const Center(
             child: CircularProgressIndicator(color: Color(0xFF7C3FE3)),
           ),
-          bottomNavigationBar: const StaffBottomNavBar(),
+          bottomNavigationBar: _buildBottomNav(),
         );
       }
 
@@ -68,7 +80,7 @@ class _ProfilePageState extends State<ProfilePage> {
         return Scaffold(
           backgroundColor: Colors.white,
           body: _buildDetailView(selectedTabIndex!, isDark),
-          bottomNavigationBar: const StaffBottomNavBar(),
+          bottomNavigationBar: _buildBottomNav(),
         );
       }
 
@@ -76,8 +88,8 @@ class _ProfilePageState extends State<ProfilePage> {
         backgroundColor: const Color(0xFFF5F5FA),
         body: Column(
           children: [
-            // ── Purple header ──
-            const StaffHeader(title: "Profile", showBack: false),
+            // ── Dynamic header ──
+            _buildMainHeader(isDark),
 
             Expanded(
               child: SingleChildScrollView(
@@ -122,11 +134,20 @@ class _ProfilePageState extends State<ProfilePage> {
                                 ),
                               ),
                               const SizedBox(height: 10),
-                              _infoRow("Email : ", p.email),
+                              _infoRow(
+                                AppStorage.getUserRole()?.toLowerCase() ==
+                                            'admin' ||
+                                        AppStorage.getUserRole()
+                                                ?.toLowerCase() ==
+                                            'superadmin'
+                                    ? "Admin ID : "
+                                    : "Staff ID : ",
+                                p.userLogin,
+                              ),
                               const SizedBox(height: 8),
                               _infoRow("Phone Number : ", p.mobile),
                               const SizedBox(height: 8),
-                              _infoRow("User ID : ", p.userLogin),
+                              _infoRow("Email : ", p.email),
                             ],
                           ),
                         ),
@@ -250,9 +271,28 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           ],
         ),
-        bottomNavigationBar: const StaffBottomNavBar(),
+        bottomNavigationBar: _buildBottomNav(),
       );
     });
+  }
+
+  Widget _buildMainHeader(bool isDark) {
+    final role = AppStorage.getUserRole()?.toLowerCase() ?? '';
+    final bool isAdmin = role == 'superadmin' || role == 'admin';
+    final String title = isAdmin ? "Profile" : "Profile";
+
+    if (isAdmin) {
+      return AdminHeader(title: title, showBack: false);
+    }
+    return StaffHeader(title: title, showBack: false);
+  }
+
+  Widget _buildBottomNav() {
+    final role = AppStorage.getUserRole()?.toLowerCase() ?? '';
+    if (role == 'superadmin' || role == 'admin') {
+      return const AdminBottomNavBar();
+    }
+    return const StaffBottomNavBar();
   }
 
   Widget _buildDetailView(int index, bool isDark) {
@@ -286,12 +326,21 @@ class _ProfilePageState extends State<ProfilePage> {
         break;
     }
 
+    final role = AppStorage.getUserRole()?.toLowerCase() ?? '';
+    final bool isAdmin = role == 'superadmin' || role == 'admin';
+
     return Column(
       children: [
-        StaffHeader(
-          title: title,
-          onBack: () => setState(() => selectedTabIndex = null),
-        ),
+        if (isAdmin)
+          AdminHeader(
+            title: title,
+            onBack: () => setState(() => selectedTabIndex = null),
+          )
+        else
+          StaffHeader(
+            title: title,
+            onBack: () => setState(() => selectedTabIndex = null),
+          ),
         Expanded(child: content),
       ],
     );
@@ -526,10 +575,18 @@ class ProfileTab extends StatelessWidget {
                 ),
                 _infoCard(
                   "Role",
-                  p.roleId == 1 ? "Principal" : "Staff",
+                  AppStorage.getUserRole() ?? "Staff",
                   Icons.admin_panel_settings_outlined,
                 ),
-                _infoCard("Employee ID", p.userLogin, Icons.badge_outlined),
+                _infoCard(
+                  AppStorage.getUserRole()?.toLowerCase() == 'admin' ||
+                          AppStorage.getUserRole()?.toLowerCase() ==
+                              'superadmin'
+                      ? "Admin ID"
+                      : "Staff ID",
+                  p.userLogin,
+                  Icons.badge_outlined,
+                ),
               ],
             ),
           ],

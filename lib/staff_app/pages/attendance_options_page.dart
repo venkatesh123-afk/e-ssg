@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/main_controller.dart';
 import '../widgets/staff_bottom_nav_bar.dart';
+import 'package:student_app/admin_app/admin_bottom_nav_bar.dart';
+import 'package:student_app/staff_app/utils/get_storage.dart';
 import '../widgets/staff_header.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import '../utils/iconify_icons.dart';
@@ -18,10 +20,19 @@ class _AttendanceOptionsPageState extends State<AttendanceOptionsPage> {
   void initState() {
     super.initState();
     // Ensure the bottom nav is synced
-    if (Get.isRegistered<StaffMainController>()) {
-      Get.find<StaffMainController>().changeIndex(1);
+    final role = AppStorage.getUserRole()?.toLowerCase() ?? '';
+    if (role == 'superadmin' || role == 'admin') {
+      if (Get.isRegistered<AdminMainController>()) {
+        Get.find<AdminMainController>().changeIndex(1);
+      } else {
+        Get.put(AdminMainController(), permanent: true).changeIndex(1);
+      }
     } else {
-      Get.put(StaffMainController(), permanent: true).changeIndex(1);
+      if (Get.isRegistered<StaffMainController>()) {
+        Get.find<StaffMainController>().changeIndex(1);
+      } else {
+        Get.put(StaffMainController(), permanent: true).changeIndex(1);
+      }
     }
   }
 
@@ -108,8 +119,16 @@ class _AttendanceOptionsPageState extends State<AttendanceOptionsPage> {
           ),
         ],
       ),
-      bottomNavigationBar: const StaffBottomNavBar(),
+      bottomNavigationBar: _buildBottomNav(),
     );
+  }
+
+  Widget _buildBottomNav() {
+    final role = AppStorage.getUserRole()?.toLowerCase() ?? '';
+    if (role == 'superadmin' || role == 'admin') {
+      return const AdminBottomNavBar();
+    }
+    return const StaffBottomNavBar();
   }
 
   Widget _buildGridCard({

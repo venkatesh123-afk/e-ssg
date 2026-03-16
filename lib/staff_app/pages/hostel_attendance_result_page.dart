@@ -155,29 +155,28 @@ class _HostelAttendanceResultPageState
                       final bool isStudentView =
                           hostelCtrl.roomAttendanceDetails.isNotEmpty;
 
-                      final List data =
-                          isStudentView
+                      final List data = isStudentView
                           ? hostelCtrl.roomAttendanceDetails
                           : (hostelCtrl.roomsSummary.isNotEmpty
-                              ? List.from(hostelCtrl.roomsSummary)
-                              : [
-                                  {
-                                    'room': 'C-201',
-                                    'floor': '2nd floor C & D blocks',
-                                    'incharge': 'Gosu Abhishek Sagar',
-                                    'total': '8',
-                                    'present': '0',
-                                    'absent': '8',
-                                  },
-                                  {
-                                    'room': 'C-201',
-                                    'floor': '2nd floor C & D blocks',
-                                    'incharge': 'Gosu Abhishek Sagar',
-                                    'total': '8',
-                                    'present': '0',
-                                    'absent': '8',
-                                  },
-                                ]);
+                                ? List.from(hostelCtrl.roomsSummary)
+                                : [
+                                    {
+                                      'room': 'C-201',
+                                      'floor': '2nd floor C & D blocks',
+                                      'incharge': 'Gosu Abhishek Sagar',
+                                      'total': '8',
+                                      'present': '0',
+                                      'absent': '8',
+                                    },
+                                    {
+                                      'room': 'C-201',
+                                      'floor': '2nd floor C & D blocks',
+                                      'incharge': 'Gosu Abhishek Sagar',
+                                      'total': '8',
+                                      'present': '0',
+                                      'absent': '8',
+                                    },
+                                  ]);
 
                       final q = _query.toLowerCase();
                       final filtered = data.where((item) {
@@ -187,7 +186,8 @@ class _HostelAttendanceResultPageState
 
                         if (item is RoomAttendanceModel) {
                           room = hostelCtrl.activeRoomName.value.toLowerCase();
-                          floor = hostelCtrl.activeFloorName.value.toLowerCase();
+                          floor = hostelCtrl.activeFloorName.value
+                              .toLowerCase();
                           searchField = item.studentName.toLowerCase();
                         } else if (item is Map) {
                           room = item['room']?.toString().toLowerCase() ?? '';

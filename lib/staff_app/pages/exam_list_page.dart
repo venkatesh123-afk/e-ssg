@@ -302,10 +302,13 @@ class _ExamsListPageState extends State<ExamsListPage> {
                             ),
                             const SizedBox(width: 10),
                             InkWell(
-                              onTap: () => Get.toNamed('/syllabus', arguments: {
-                                    'examId': 247,
-                                    'examName': "INC SR MAINS-02",
-                                  }),
+                              onTap: () => Get.toNamed(
+                                '/syllabus',
+                                arguments: {
+                                  'examId': 247,
+                                  'examName': "INC SR MAINS-02",
+                                },
+                              ),
                               child: Icon(
                                 Icons.book_outlined,
                                 color: Colors.blue.shade500,
@@ -504,10 +507,13 @@ class _ExamsListPageState extends State<ExamsListPage> {
                             ),
                             const SizedBox(width: 10),
                             InkWell(
-                              onTap: () => Get.toNamed('/syllabus', arguments: {
-                                    'examId': exam.id,
-                                    'examName': exam.examName,
-                                  }),
+                              onTap: () => Get.toNamed(
+                                '/syllabus',
+                                arguments: {
+                                  'examId': exam.id,
+                                  'examName': exam.examName,
+                                },
+                              ),
                               child: Icon(
                                 Icons.book_outlined,
                                 color: Colors.blue.shade500,

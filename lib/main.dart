@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:student_app/staff_app/pages/admin_dashboard_page.dart';
-import 'package:student_app/staff_app/pages/admin_pro_admission_page.dart';
+import 'package:student_app/admin_app/add_assignments_page.dart';
+import 'package:student_app/admin_app/admin_assignments_page.dart';
+import 'package:student_app/admin_app/admin_dashboard_page.dart';
+import 'package:student_app/admin_app/admin_pro_admission_page.dart';
+import 'package:student_app/admin_app/exam_syllabus_wise_page.dart';
 import 'package:student_app/staff_app/pages/staff_dashboard_page.dart';
 import 'package:student_app/staff_app/pages/login_page.dart';
 import 'package:student_app/staff_app/pages/staff_auth_wrapper.dart';
@@ -12,7 +15,6 @@ import 'package:student_app/staff_app/pages/verify_attendance_page.dart';
 import 'package:student_app/staff_app/pages/verify_outing_page.dart';
 import 'package:student_app/student_app/services/dashboard_controller.dart';
 import 'package:student_app/student_app/services/documents_controller.dart';
-
 // Staff Controllers
 import 'package:student_app/staff_app/controllers/theme_controller.dart'
     as staff;
@@ -54,9 +56,7 @@ import 'package:student_app/staff_app/pages/take_staff_attendance_page.dart';
 import 'package:student_app/staff_app/pages/hostel_attendance_mark_page.dart';
 import 'package:student_app/staff_app/pages/hostel_attendance_status_page.dart';
 import 'package:student_app/staff_app/pages/add_hostel_attendance_page.dart';
-import 'package:student_app/staff_app/pages/exam_syllabus_page.dart';
-import 'package:student_app/staff_app/pages/assignments_page.dart';
-import 'package:student_app/staff_app/pages/add_assignments_page.dart';
+
 // Student Pages
 import 'package:student_app/student_app/class_attendance_page.dart';
 import 'package:student_app/student_app/hostel_attendence_page.dart';

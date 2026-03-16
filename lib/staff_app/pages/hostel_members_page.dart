@@ -199,9 +199,7 @@ class _HostelMembersPageState extends State<HostelMembersPage> {
                                   value: rooms
                                       .firstWhereOrNull((r) => r.id == roomId)
                                       ?.roomName,
-                                  items: rooms
-                                      .map((r) => r.roomName)
-                                      .toList(),
+                                  items: rooms.map((r) => r.roomName).toList(),
                                   onChanged: (val) {
                                     final selected = rooms.firstWhere(
                                       (r) => r.roomName == val,
@@ -221,12 +219,13 @@ class _HostelMembersPageState extends State<HostelMembersPage> {
                               height: 50,
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
-                                  colors: (selectedBranchId.value != null &&
+                                  colors:
+                                      (selectedBranchId.value != null &&
                                           (selectedCategory.value ==
                                                   "Hostel Wise"
                                               ? selectedHostelId.value != null
                                               : selectedCategory.value ==
-                                                  "Floor Wise"
+                                                    "Floor Wise"
                                               ? selectedFloorId.value != null
                                               : selectedRoomId.value != null))
                                       ? [
@@ -234,12 +233,12 @@ class _HostelMembersPageState extends State<HostelMembersPage> {
                                           const Color(0xFFCD96FB),
                                         ]
                                       : [
-                                          const Color(0xFF856CFB).withOpacity(
-                                            0.5,
-                                          ),
-                                          const Color(0xFFCD96FB).withOpacity(
-                                            0.5,
-                                          ),
+                                          const Color(
+                                            0xFF856CFB,
+                                          ).withOpacity(0.5),
+                                          const Color(
+                                            0xFFCD96FB,
+                                          ).withOpacity(0.5),
                                         ],
                                   begin: Alignment.centerLeft,
                                   end: Alignment.centerRight,
@@ -247,41 +246,42 @@ class _HostelMembersPageState extends State<HostelMembersPage> {
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: ElevatedButton(
-                                onPressed: (selectedBranchId.value != null &&
-                                        (selectedCategory.value ==
-                                                "Hostel Wise"
+                                onPressed:
+                                    (selectedBranchId.value != null &&
+                                        (selectedCategory.value == "Hostel Wise"
                                             ? selectedHostelId.value != null
                                             : selectedCategory.value ==
-                                                "Floor Wise"
+                                                  "Floor Wise"
                                             ? selectedFloorId.value != null
                                             : selectedRoomId.value != null))
                                     ? () async {
-                                      String type = "";
-                                      String param = "";
+                                        String type = "";
+                                        String param = "";
 
-                                      if (selectedCategory.value ==
-                                          "Hostel Wise") {
-                                        type = "hostel";
-                                        param = selectedHostelId.value
-                                            .toString();
-                                      } else if (selectedCategory.value ==
-                                          "Floor Wise") {
-                                        type = "floor";
-                                        param = selectedFloorId.value
-                                            .toString();
-                                      } else {
-                                        type = "room";
-                                        param = selectedRoomId.value.toString();
+                                        if (selectedCategory.value ==
+                                            "Hostel Wise") {
+                                          type = "hostel";
+                                          param = selectedHostelId.value
+                                              .toString();
+                                        } else if (selectedCategory.value ==
+                                            "Floor Wise") {
+                                          type = "floor";
+                                          param = selectedFloorId.value
+                                              .toString();
+                                        } else {
+                                          type = "room";
+                                          param = selectedRoomId.value
+                                              .toString();
+                                        }
+
+                                        await hostelCtrl.fetchHostelMembers(
+                                          type: type,
+                                          param: param,
+                                        );
+                                        setState(() {
+                                          _showData = true;
+                                        });
                                       }
-
-                                      await hostelCtrl.fetchHostelMembers(
-                                        type: type,
-                                        param: param,
-                                      );
-                                      setState(() {
-                                        _showData = true;
-                                      });
-                                    }
                                     : null,
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.transparent,
@@ -294,21 +294,21 @@ class _HostelMembersPageState extends State<HostelMembersPage> {
                                 ),
                                 child: hostelCtrl.isLoading.value
                                     ? const SizedBox(
-                                      height: 20,
-                                      width: 20,
-                                      child: CircularProgressIndicator(
-                                        color: Colors.white,
-                                        strokeWidth: 2,
-                                      ),
-                                    )
+                                        height: 20,
+                                        width: 20,
+                                        child: CircularProgressIndicator(
+                                          color: Colors.white,
+                                          strokeWidth: 2,
+                                        ),
+                                      )
                                     : const Text(
-                                      "Get Students",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w600,
+                                        "Get Students",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w600,
+                                        ),
                                       ),
-                                    ),
                               ),
                             ),
                           ),
@@ -472,7 +472,10 @@ class _HostelMembersPageState extends State<HostelMembersPage> {
             children: [
               // Room Badge
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: primaryPurple,
                   borderRadius: BorderRadius.circular(6),
@@ -490,7 +493,10 @@ class _HostelMembersPageState extends State<HostelMembersPage> {
               ),
               // Serial Number Badge
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.grey.shade100,
                   borderRadius: BorderRadius.circular(6),
@@ -794,88 +800,89 @@ class _HostelMembersPageState extends State<HostelMembersPage> {
                 ),
                 child: Obx(
                   () => GestureDetector(
-                    onTap: (selectedHostel.value == null ||
+                    onTap:
+                        (selectedHostel.value == null ||
                             selectedFloor.value == null ||
                             selectedRoom.value == null ||
                             hostelCtrl.isLoading.value)
                         ? null
                         : () async {
-                          final message = await hostelCtrl.updateHostelMember(
-                            sid:
-                                (data['sid'] ?? data['id'] ?? '')
-                                    .toString(),
-                            branch: selectedBranchId.value?.toString() ?? "",
-                            hostel: selectedHostel.value!.id.toString(),
-                            floor: selectedFloor.value!.id.toString(),
-                            room: selectedRoom.value!.id.toString(),
-                            month: "March", // Consistency with add page
-                          );
-                          if (message != null) {
-                            Navigator.of(dialogContext).pop();
-                            ScaffoldMessenger.of(ctx).showSnackBar(
-                              SnackBar(
-                                content: Text(message),
-                                backgroundColor: primaryPurple,
-                              ),
+                            final message = await hostelCtrl.updateHostelMember(
+                              sid: (data['sid'] ?? data['id'] ?? '').toString(),
+                              branch: selectedBranchId.value?.toString() ?? "",
+                              hostel: selectedHostel.value!.id.toString(),
+                              floor: selectedFloor.value!.id.toString(),
+                              room: selectedRoom.value!.id.toString(),
+                              month: "March", // Consistency with add page
                             );
-                            // Refresh members list
-                            String type = "";
-                            String param = "";
-                            if (selectedCategory.value == "Hostel Wise") {
-                              type = "hostel";
-                              param = selectedHostelId.value.toString();
-                            } else if (selectedCategory.value == "Floor Wise") {
-                              type = "floor";
-                              param = selectedFloorId.value.toString();
-                            } else {
-                              type = "room";
-                              param = selectedRoomId.value.toString();
+                            if (message != null) {
+                              Navigator.of(dialogContext).pop();
+                              ScaffoldMessenger.of(ctx).showSnackBar(
+                                SnackBar(
+                                  content: Text(message),
+                                  backgroundColor: primaryPurple,
+                                ),
+                              );
+                              // Refresh members list
+                              String type = "";
+                              String param = "";
+                              if (selectedCategory.value == "Hostel Wise") {
+                                type = "hostel";
+                                param = selectedHostelId.value.toString();
+                              } else if (selectedCategory.value ==
+                                  "Floor Wise") {
+                                type = "floor";
+                                param = selectedFloorId.value.toString();
+                              } else {
+                                type = "room";
+                                param = selectedRoomId.value.toString();
+                              }
+                              await hostelCtrl.fetchHostelMembers(
+                                type: type,
+                                param: param,
+                              );
                             }
-                            await hostelCtrl.fetchHostelMembers(
-                              type: type,
-                              param: param,
-                            );
-                          }
-                        },
+                          },
                     child: Container(
                       width: double.infinity,
                       height: 52,
                       decoration: BoxDecoration(
-                        gradient: (selectedHostel.value == null ||
+                        gradient:
+                            (selectedHostel.value == null ||
                                 selectedFloor.value == null ||
                                 selectedRoom.value == null ||
                                 hostelCtrl.isLoading.value)
                             ? LinearGradient(
-                              colors: [
-                                const Color(0xFF7D74FC).withOpacity(0.5),
-                                const Color(0xFFD08EF7).withOpacity(0.5),
-                              ],
-                            )
+                                colors: [
+                                  const Color(0xFF7D74FC).withOpacity(0.5),
+                                  const Color(0xFFD08EF7).withOpacity(0.5),
+                                ],
+                              )
                             : const LinearGradient(
-                              colors: [Color(0xFF7D74FC), Color(0xFFD08EF7)],
-                              begin: Alignment.centerLeft,
-                              end: Alignment.centerRight,
-                            ),
+                                colors: [Color(0xFF7D74FC), Color(0xFFD08EF7)],
+                                begin: Alignment.centerLeft,
+                                end: Alignment.centerRight,
+                              ),
                         borderRadius: BorderRadius.circular(14),
                       ),
                       alignment: Alignment.center,
                       child: hostelCtrl.isLoading.value
                           ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2,
-                            ),
-                          )
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
                           : const Text(
-                            "Update Members",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
+                              "Update Members",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
                     ),
                   ),
                 ),
@@ -944,10 +951,11 @@ class _HostelMembersPageState extends State<HostelMembersPage> {
   }
 
   void _showDeleteDialog(Map<String, dynamic> data) {
-    final String studentName = data['student_name']?.toString() ??
+    final String studentName =
+        data['student_name']?.toString() ??
         data['name']?.toString() ??
         'this student';
-        
+
     showDialog(
       context: context,
       builder: (dialogContext) => Dialog(
@@ -1056,13 +1064,16 @@ class _HostelMembersPageState extends State<HostelMembersPage> {
                           ),
                         ),
                         onPressed: () async {
-                          final sid = (data['sid'] ?? data['id'] ?? '').toString();
+                          final sid = (data['sid'] ?? data['id'] ?? '')
+                              .toString();
                           if (sid.isEmpty) {
                             Get.snackbar("Error", "Student ID not found");
                             return;
                           }
 
-                          final message = await hostelCtrl.removeHostelMember(sid);
+                          final message = await hostelCtrl.removeHostelMember(
+                            sid,
+                          );
                           if (message != null) {
                             Navigator.of(dialogContext).pop();
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -1071,7 +1082,7 @@ class _HostelMembersPageState extends State<HostelMembersPage> {
                                 backgroundColor: primaryPurple,
                               ),
                             );
-                            
+
                             // Refresh members list
                             String type = "";
                             String param = "";

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../widgets/staff_header.dart';
-import '../controllers/homework_controller.dart';
+import 'package:student_app/admin_app/admin_header.dart';
+import 'package:student_app/staff_app/controllers/homework_controller.dart';
 import 'package:intl/intl.dart';
 
 class AssignmentsPage extends StatelessWidget {
@@ -16,7 +16,7 @@ class AssignmentsPage extends StatelessWidget {
       body: Column(
         children: [
           /// HEADER
-          const StaffHeader(title: "Assignments"),
+          const AdminHeader(title: "Assignments"),
 
           const SizedBox(height: 20),
 
@@ -59,7 +59,9 @@ class AssignmentsPage extends StatelessWidget {
                     Expanded(
                       child: Obx(() {
                         if (controller.isLoading.value) {
-                          return const Center(child: CircularProgressIndicator());
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
                         }
 
                         if (controller.errorMessage.isNotEmpty) {
@@ -83,17 +85,22 @@ class AssignmentsPage extends StatelessWidget {
                         }
 
                         if (controller.filteredList.isEmpty) {
-                          return const Center(child: Text("No assignments found"));
+                          return const Center(
+                            child: Text("No assignments found"),
+                          );
                         }
 
                         return ListView.separated(
                           padding: const EdgeInsets.only(bottom: 20),
                           itemCount: controller.filteredList.length,
-                          separatorBuilder: (context, index) => const SizedBox(height: 15),
+                          separatorBuilder: (context, index) =>
+                              const SizedBox(height: 15),
                           itemBuilder: (context, index) {
                             final homework = controller.filteredList[index];
-                            final createdAt = homework['created_at'] != null 
-                                ? DateFormat('dd-MM-yyyy').format(DateTime.parse(homework['created_at']))
+                            final createdAt = homework['created_at'] != null
+                                ? DateFormat('dd-MM-yyyy').format(
+                                    DateTime.parse(homework['created_at']),
+                                  )
                                 : '-----';
 
                             return Container(
@@ -114,11 +121,19 @@ class AssignmentsPage extends StatelessWidget {
                                 children: [
                                   Text(
                                     "S.NO: ${index + 1}",
-                                    style: const TextStyle(fontWeight: FontWeight.bold),
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                   const Divider(),
-                                  _buildInfoRow("Title", homework['title'] ?? '-----'),
-                                  _buildInfoRow("Created By", homework['creator']?['name'] ?? '-------'),
+                                  _buildInfoRow(
+                                    "Title",
+                                    homework['title'] ?? '-----',
+                                  ),
+                                  _buildInfoRow(
+                                    "Created By",
+                                    homework['creator']?['name'] ?? '-------',
+                                  ),
                                   _buildInfoRow("Created At", createdAt),
                                   const SizedBox(height: 10),
 
@@ -127,12 +142,20 @@ class AssignmentsPage extends StatelessWidget {
                                     children: [
                                       const Text(
                                         "Actions : ",
-                                        style: TextStyle(fontWeight: FontWeight.w500),
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                        ),
                                       ),
                                       const SizedBox(width: 10),
-                                      _buildActionButton(Icons.edit, Colors.orange),
+                                      _buildActionButton(
+                                        Icons.edit,
+                                        Colors.orange,
+                                      ),
                                       const SizedBox(width: 10),
-                                      _buildActionButton(Icons.delete, Colors.red),
+                                      _buildActionButton(
+                                        Icons.delete,
+                                        Colors.red,
+                                      ),
                                     ],
                                   ),
                                 ],
@@ -194,10 +217,7 @@ class AssignmentsPage extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: Text(
-              value,
-              style: const TextStyle(color: Colors.black87),
-            ),
+            child: Text(value, style: const TextStyle(color: Colors.black87)),
           ),
         ],
       ),
@@ -211,11 +231,7 @@ class AssignmentsPage extends StatelessWidget {
         color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(6),
       ),
-      child: Icon(
-        icon,
-        color: color,
-        size: 18,
-      ),
+      child: Icon(icon, color: color, size: 18),
     );
   }
 }

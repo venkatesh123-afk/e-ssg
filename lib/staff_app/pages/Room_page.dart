@@ -84,8 +84,10 @@ class _RoomsPageState extends State<RoomsPage> {
                 final filtered = hostelCtrl.roomModels.where((r) {
                   final searchLower = _query.toLowerCase();
                   return r.roomName.toLowerCase().contains(searchLower) ||
-                      (r.floorName?.toLowerCase().contains(searchLower) ?? false) ||
-                      (r.hostelName?.toLowerCase().contains(searchLower) ?? false);
+                      (r.floorName?.toLowerCase().contains(searchLower) ??
+                          false) ||
+                      (r.hostelName?.toLowerCase().contains(searchLower) ??
+                          false);
                 }).toList();
 
                 if (filtered.isEmpty) {
@@ -227,11 +229,7 @@ class _RoomsPageState extends State<RoomsPage> {
                     const SizedBox(height: 12),
                     const Row(
                       children: [
-                        Icon(
-                          Icons.phone,
-                          color: Color(0xFF5A7DC6),
-                          size: 18,
-                        ),
+                        Icon(Icons.phone, color: Color(0xFF5A7DC6), size: 18),
                         SizedBox(width: 8),
                         Text(
                           "N/A", // Phone not directly in RoomModel, keeping as placeholder

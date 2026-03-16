@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../widgets/staff_header.dart';
-import '../controllers/syllabus_batch_controller.dart';
-import '../model/syllabus_batch_model.dart';
-import '../widgets/skeleton.dart';
-import 'manage_syllabus_page.dart';
+import 'package:student_app/admin_app/admin_header.dart';
+import 'package:student_app/admin_app/admin_manage_syllabus_page.dart';
+import 'package:student_app/staff_app/controllers/syllabus_batch_controller.dart';
+import 'package:student_app/staff_app/model/syllabus_batch_model.dart';
+import 'package:student_app/staff_app/widgets/skeleton.dart';
 
 class SyllabusPage extends StatefulWidget {
   const SyllabusPage({super.key});
@@ -16,7 +16,7 @@ class SyllabusPage extends StatefulWidget {
 class _SyllabusPageState extends State<SyllabusPage> {
   final SyllabusBatchController controller = Get.put(SyllabusBatchController());
   final TextEditingController _searchController = TextEditingController();
-  
+
   late final int examId;
   late final String examName;
 
@@ -34,7 +34,7 @@ class _SyllabusPageState extends State<SyllabusPage> {
       backgroundColor: Colors.white,
       body: Column(
         children: [
-          const StaffHeader(title: 'Syllabus'),
+          const AdminHeader(title: 'Syllabus'),
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -76,7 +76,8 @@ class _SyllabusPageState extends State<SyllabusPage> {
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
                             itemCount: controller.filteredBatches.length,
-                            separatorBuilder: (context, index) => const SizedBox(height: 15),
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(height: 15),
                             itemBuilder: (context, index) {
                               final batch = controller.filteredBatches[index];
                               return _buildSyllabusCard(index + 1, batch);
@@ -195,7 +196,11 @@ class _SyllabusPageState extends State<SyllabusPage> {
     );
   }
 
-  Widget _buildActionRow(String label, String actionText, SyllabusBatchModel batch) {
+  Widget _buildActionRow(
+    String label,
+    String actionText,
+    SyllabusBatchModel batch,
+  ) {
     return Row(
       children: [
         SizedBox(
@@ -211,10 +216,10 @@ class _SyllabusPageState extends State<SyllabusPage> {
         ),
         InkWell(
           onTap: () {
-            Get.to(() => const ManageSyllabusPage(), arguments: {
-              'batch': batch,
-              'examName': examName,
-            });
+            Get.to(
+              () => const ManageSyllabusPage(),
+              arguments: {'batch': batch, 'examName': examName},
+            );
           },
           borderRadius: BorderRadius.circular(6),
           child: Container(

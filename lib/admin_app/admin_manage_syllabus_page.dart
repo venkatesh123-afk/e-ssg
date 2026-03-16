@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
+import 'package:student_app/admin_app/admin_add_edit_syllabus_page.dart';
+import 'package:student_app/admin_app/admin_header.dart';
+import 'package:student_app/staff_app/controllers/manage_syllabus_controller.dart';
+import 'package:student_app/staff_app/model/syllabus_batch_model.dart';
+import 'package:student_app/staff_app/widgets/skeleton.dart';
 import 'exam_syllabus_details_page.dart';
-import 'add_edit_syllabus_page.dart';
-import '../widgets/staff_header.dart';
-import '../controllers/manage_syllabus_controller.dart';
-import '../model/syllabus_batch_model.dart';
-import '../widgets/skeleton.dart';
 
 class ManageSyllabusPage extends StatefulWidget {
   const ManageSyllabusPage({super.key});
@@ -44,7 +45,7 @@ class _ManageSyllabusPageState extends State<ManageSyllabusPage> {
       backgroundColor: Colors.white,
       body: Column(
         children: [
-          StaffHeader(title: "Manage Syllabus", onBack: () => Get.back()),
+          AdminHeader(title: "Manage Syllabus", onBack: () => Get.back()),
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(16),
@@ -218,7 +219,7 @@ class _ManageSyllabusPageState extends State<ManageSyllabusPage> {
               const SizedBox(width: 15),
               InkWell(
                 onTap: () => Get.to(
-                  () => const SyllabusDetailsPage(),
+                  () => SyllabusDetailsPage(syllabus: subject.syllabus),
                   arguments: {
                     'subjectName': subject.subjectName,
                     'examName': examName,

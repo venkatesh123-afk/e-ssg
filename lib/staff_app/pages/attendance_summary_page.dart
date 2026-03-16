@@ -10,7 +10,7 @@ class AttendanceSummaryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     // If no summary is passed, we could optionally show a message or find the first one from controller
     final shifts = summary?.shifts ?? {};
-    
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Column(
@@ -26,7 +26,9 @@ class AttendanceSummaryPage extends StatelessWidget {
                     const Center(
                       child: Padding(
                         padding: EdgeInsets.only(top: 100),
-                        child: Text("No attendance data available for this branch."),
+                        child: Text(
+                          "No attendance data available for this branch.",
+                        ),
                       ),
                     ),
                   ...shifts.values.map((shift) {
@@ -117,6 +119,7 @@ class AttendanceSummaryPage extends StatelessWidget {
       ],
     );
   }
+
   Widget _buildDataRow(
     String type,
     String total,

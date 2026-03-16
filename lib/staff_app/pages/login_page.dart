@@ -51,14 +51,14 @@ class _LoginPageState extends State<LoginPage> {
           // ---------------- BACKGROUND DECORATIONS ----------------
           Positioned(
             top: -150,
-            left: -150,
-            child: _buildBlob(400, [
+            left: -107,
+            child: _buildBlob(324, [
               const Color(0xFFC98CF8),
               const Color(0xFF8275FB),
             ]),
           ),
           Positioned(
-            top: -156,
+            top: -180,
             left: 156,
             child: _buildBlob(270, [
               const Color(0xFFC98CF8),
@@ -66,7 +66,7 @@ class _LoginPageState extends State<LoginPage> {
             ]),
           ),
           Positioned(
-            top: 673,
+            top: 603,
             left: 225,
             child: _buildBlob(306, [
               const Color(0xFFC98CF8),
@@ -74,9 +74,9 @@ class _LoginPageState extends State<LoginPage> {
             ]),
           ),
           Positioned(
-            top: 615,
-            left: 150,
-            child: _buildBlob(70, [
+            top: 600,
+            left: 195,
+            child: _buildBlob(56, [
               const Color(0xFFC98CF8),
               const Color(0xFF8275FB),
             ]),
@@ -86,27 +86,24 @@ class _LoginPageState extends State<LoginPage> {
           SafeArea(
             child: Center(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 25),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Column(
                   children: [
                     const SizedBox(height: 20),
                     // ---------------- LOGIN CARD ----------------
                     Container(
-                      padding: const EdgeInsets.all(30),
+                      constraints: const BoxConstraints(maxWidth: 358),
+                      padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(35),
+                        borderRadius: BorderRadius.circular(32),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
-                            blurRadius: 20,
-                            spreadRadius: 5,
+                            color: Colors.black.withOpacity(0.25),
+                            blurRadius: 4,
+                            offset: const Offset(0, 0),
                           ),
                         ],
-                        border: Border.all(
-                          color: Colors.grey.shade100,
-                          width: 2,
-                        ),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -121,68 +118,7 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ),
                           ),
-                          const SizedBox(height: 30),
-
-                          // ---------- LOGIN TOGGLE ----------
-                          Container(
-                            height: 55,
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFF3F3F3),
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: GestureDetector(
-                                    onTap: () => setState(() => isStaff = true),
-                                    child: Container(
-                                      alignment: Alignment.center,
-                                      decoration: BoxDecoration(
-                                        color: isStaff
-                                            ? const Color(0xFF8344E0)
-                                            : Colors.transparent,
-                                        borderRadius: BorderRadius.circular(30),
-                                      ),
-                                      child: Text(
-                                        "Staff Login",
-                                        style: TextStyle(
-                                          color: isStaff
-                                              ? Colors.white
-                                              : Colors.black87,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: GestureDetector(
-                                    onTap: () =>
-                                        setState(() => isStaff = false),
-                                    child: Container(
-                                      alignment: Alignment.center,
-                                      decoration: BoxDecoration(
-                                        color: !isStaff
-                                            ? const Color(0xFF8344E0)
-                                            : Colors.transparent,
-                                        borderRadius: BorderRadius.circular(30),
-                                      ),
-                                      child: Text(
-                                        "Student Login",
-                                        style: TextStyle(
-                                          color: !isStaff
-                                              ? Colors.white
-                                              : Colors.black87,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 25),
+                          const SizedBox(height: 20),
 
                           // ---------- USERNAME ----------
                           const Text(
@@ -193,12 +129,12 @@ class _LoginPageState extends State<LoginPage> {
                               color: Colors.black87,
                             ),
                           ),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 6),
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 15),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFF7F7F7),
-                              borderRadius: BorderRadius.circular(12),
+                              color: const Color(0xFFF5F5F7),
+                              borderRadius: BorderRadius.circular(15),
                             ),
                             child: TextField(
                               controller: userCtrl,
@@ -224,12 +160,12 @@ class _LoginPageState extends State<LoginPage> {
                               color: Colors.black87,
                             ),
                           ),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 6),
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 15),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFF7F7F7),
-                              borderRadius: BorderRadius.circular(12),
+                              color: const Color(0xFFF5F5F7),
+                              borderRadius: BorderRadius.circular(15),
                             ),
                             child: TextField(
                               controller: passCtrl,
@@ -262,13 +198,13 @@ class _LoginPageState extends State<LoginPage> {
                             alignment: Alignment.centerRight,
                             child: TextButton(
                               onPressed: () {}, // Logic not added as requested
-                                child: const Text(
-                                  "Forgot Password",
-                                  style: TextStyle(
-                                    color: Color(0xFFFA577F),
-                                    fontSize: 13,
-                                  ),
+                              child: const Text(
+                                "Forgot Password",
+                                style: TextStyle(
+                                  color: Color(0xFFFA577F),
+                                  fontSize: 13,
                                 ),
+                              ),
                             ),
                           ),
                           const SizedBox(height: 10),
@@ -277,31 +213,31 @@ class _LoginPageState extends State<LoginPage> {
                           Obx(
                             () => Container(
                               width: double.infinity,
-                              height: 55,
+                              height: 50,
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(15),
-                                  gradient: const LinearGradient(
-                                    colors: [
-                                      Color(0xFF8B64FE),
-                                      Color(0xFFD68AF9),
-                                    ],
-                                  ),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: const Color(
-                                        0xFF8A2BE2,
-                                      ).withOpacity(0.15),
-                                      blurRadius: 10,
-                                      offset: const Offset(0, 5),
-                                    ),
+                                borderRadius: BorderRadius.circular(20),
+                                gradient: const LinearGradient(
+                                  colors: [
+                                    Color(0xFF8B64FE),
+                                    Color(0xFFD68AF9),
                                   ],
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: const Color(
+                                      0xFF8A2BE2,
+                                    ).withOpacity(0.15),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 5),
+                                  ),
+                                ],
                               ),
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.transparent,
                                   shadowColor: Colors.transparent,
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(15),
+                                    borderRadius: BorderRadius.circular(20),
                                   ),
                                 ),
                                 onPressed: auth.isLoading.value

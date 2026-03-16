@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../widgets/staff_header.dart';
+import 'package:student_app/admin_app/admin_header.dart';
 import 'collect_fee_page.dart';
 import 'edit_student_details_page.dart';
-
 
 class AdminStudentDetailsPage extends StatefulWidget {
   const AdminStudentDetailsPage({super.key});
@@ -22,7 +21,7 @@ class _AdminStudentDetailsPageState extends State<AdminStudentDetailsPage> {
       backgroundColor: Colors.white,
       body: Column(
         children: [
-          const StaffHeader(title: 'Student Details'),
+          const AdminHeader(title: 'Student Details'),
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -176,7 +175,11 @@ class _AdminStudentDetailsPageState extends State<AdminStudentDetailsPage> {
                   color: Colors.red.shade50,
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(Icons.picture_as_pdf, color: Colors.red, size: 30),
+                child: const Icon(
+                  Icons.picture_as_pdf,
+                  color: Colors.red,
+                  size: 30,
+                ),
               ),
               const SizedBox(width: 15),
               const Column(
@@ -397,7 +400,11 @@ class _AdminStudentDetailsPageState extends State<AdminStudentDetailsPage> {
     );
   }
 
-  PopupMenuItem<String> _buildPopupMenuItem(IconData icon, String title, String value) {
+  PopupMenuItem<String> _buildPopupMenuItem(
+    IconData icon,
+    String title,
+    String value,
+  ) {
     return PopupMenuItem<String>(
       value: value,
       child: Row(
@@ -430,8 +437,17 @@ class _AdminStudentDetailsPageState extends State<AdminStudentDetailsPage> {
       text: TextSpan(
         style: const TextStyle(fontSize: 12, color: Colors.black54),
         children: [
-          TextSpan(text: '$label : ', style: const TextStyle(fontWeight: FontWeight.w400)),
-          TextSpan(text: ' $count', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
+          TextSpan(
+            text: '$label : ',
+            style: const TextStyle(fontWeight: FontWeight.w400),
+          ),
+          TextSpan(
+            text: ' $count',
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
         ],
       ),
     );
@@ -457,7 +473,12 @@ class _AdminStudentDetailsPageState extends State<AdminStudentDetailsPage> {
               ),
             ],
           ),
-          padding: const EdgeInsets.only(top: 60, bottom: 20, left: 16, right: 16),
+          padding: const EdgeInsets.only(
+            top: 60,
+            bottom: 20,
+            left: 16,
+            right: 16,
+          ),
           child: Column(
             children: [
               Row(
@@ -470,15 +491,31 @@ class _AdminStudentDetailsPageState extends State<AdminStudentDetailsPage> {
                       }
                     },
                     padding: EdgeInsets.zero,
-                    icon: const Icon(Icons.more_vert, color: Colors.black, size: 24),
+                    icon: const Icon(
+                      Icons.more_vert,
+                      color: Colors.black,
+                      size: 24,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),
                     ),
                     itemBuilder: (context) => [
                       _buildPopupMenuItem(Icons.edit_outlined, 'Edit', 'edit'),
-                      _buildPopupMenuItem(Icons.badge_outlined, 'Issue Conduct', 'conduct'),
-                      _buildPopupMenuItem(Icons.print_outlined, 'Print Admission Form', 'print'),
-                      _buildPopupMenuItem(Icons.check, 'Student Already Alloted', 'alloted'),
+                      _buildPopupMenuItem(
+                        Icons.badge_outlined,
+                        'Issue Conduct',
+                        'conduct',
+                      ),
+                      _buildPopupMenuItem(
+                        Icons.print_outlined,
+                        'Print Admission Form',
+                        'print',
+                      ),
+                      _buildPopupMenuItem(
+                        Icons.check,
+                        'Student Already Alloted',
+                        'alloted',
+                      ),
                     ],
                   ),
                 ],
@@ -497,8 +534,14 @@ class _AdminStudentDetailsPageState extends State<AdminStudentDetailsPage> {
                 text: const TextSpan(
                   style: TextStyle(fontSize: 15, color: Colors.black87),
                   children: [
-                    TextSpan(text: 'Admission No : ', style: TextStyle(fontWeight: FontWeight.bold)),
-                    TextSpan(text: ' 252126', style: TextStyle(color: Colors.black54)),
+                    TextSpan(
+                      text: 'Admission No : ',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    TextSpan(
+                      text: ' 252126',
+                      style: TextStyle(color: Colors.black54),
+                    ),
                   ],
                 ),
               ),
@@ -536,11 +579,7 @@ class _AdminStudentDetailsPageState extends State<AdminStudentDetailsPage> {
                   ],
                 ),
                 child: const Center(
-                  child: Icon(
-                    Icons.person,
-                    size: 60,
-                    color: Color(0xFF7E49FF),
-                  ),
+                  child: Icon(Icons.person, size: 60, color: Color(0xFF7E49FF)),
                 ),
               ),
               Positioned(
@@ -552,10 +591,17 @@ class _AdminStudentDetailsPageState extends State<AdminStudentDetailsPage> {
                     color: Colors.white,
                     shape: BoxShape.circle,
                     boxShadow: [
-                      BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 4),
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 4,
+                      ),
                     ],
                   ),
-                  child: const Icon(Icons.camera_alt, size: 14, color: Colors.black87),
+                  child: const Icon(
+                    Icons.camera_alt,
+                    size: 14,
+                    color: Colors.black87,
+                  ),
                 ),
               ),
             ],
@@ -592,11 +638,31 @@ class _AdminStudentDetailsPageState extends State<AdminStudentDetailsPage> {
       scrollDirection: Axis.horizontal,
       child: Row(
         children: [
-          _buildTab('Profile', _activeTabIndex == 0, () => setState(() => _activeTabIndex = 0)),
-          _buildTab('Class Attendance', _activeTabIndex == 1, () => setState(() => _activeTabIndex = 1)),
-          _buildTab('Hostel Attendance', _activeTabIndex == 2, () => setState(() => _activeTabIndex = 2)),
-          _buildTab('Documents', _activeTabIndex == 3, () => setState(() => _activeTabIndex = 3)),
-          _buildTab('Remarks', _activeTabIndex == 4, () => setState(() => _activeTabIndex = 4)),
+          _buildTab(
+            'Profile',
+            _activeTabIndex == 0,
+            () => setState(() => _activeTabIndex = 0),
+          ),
+          _buildTab(
+            'Class Attendance',
+            _activeTabIndex == 1,
+            () => setState(() => _activeTabIndex = 1),
+          ),
+          _buildTab(
+            'Hostel Attendance',
+            _activeTabIndex == 2,
+            () => setState(() => _activeTabIndex = 2),
+          ),
+          _buildTab(
+            'Documents',
+            _activeTabIndex == 3,
+            () => setState(() => _activeTabIndex = 3),
+          ),
+          _buildTab(
+            'Remarks',
+            _activeTabIndex == 4,
+            () => setState(() => _activeTabIndex = 4),
+          ),
         ],
       ),
     );

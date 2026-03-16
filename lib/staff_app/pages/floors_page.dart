@@ -371,11 +371,7 @@ class _FloorsPageState extends State<FloorsPage> {
                 icon: Icons.door_front_door_outlined,
                 color: const Color(0xFF0D9488),
                 bgColor: const Color(0xFFCCFBF1),
-                onTap: () => Get.to(
-                  () => RoomsPage(
-                    floorId: floor.id,
-                  ),
-                ),
+                onTap: () => Get.to(() => RoomsPage(floorId: floor.id)),
               ),
             ],
           ),

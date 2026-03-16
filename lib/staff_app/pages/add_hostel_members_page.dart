@@ -152,7 +152,7 @@ class AddHostelMembersPage extends StatelessWidget {
                                 BoxShadow(
                                   color: Colors.black.withOpacity(0.05),
                                   blurRadius: 10,
-                                )
+                                ),
                               ],
                             ),
                             child: Column(
@@ -170,8 +170,15 @@ class AddHostelMembersPage extends StatelessWidget {
                                     controller.globalRoom.value = null;
                                     controller.globalFloors.clear();
                                     if (v != null) {
-                                      final data = await ApiService.getFloorsByHostel(v.id);
-                                      controller.globalFloors.assignAll(data.map((e) => FloorModel.fromJson(e)).toList());
+                                      final data =
+                                          await ApiService.getFloorsByHostel(
+                                            v.id,
+                                          );
+                                      controller.globalFloors.assignAll(
+                                        data
+                                            .map((e) => FloorModel.fromJson(e))
+                                            .toList(),
+                                      );
                                     }
                                   },
                                 ),
@@ -186,8 +193,15 @@ class AddHostelMembersPage extends StatelessWidget {
                                     controller.globalRoom.value = null;
                                     controller.globalRooms.clear();
                                     if (v != null) {
-                                      final data = await ApiService.getRoomsByFloor(v.id);
-                                      controller.globalRooms.assignAll(data.map((e) => RoomModel.fromJson(e)).toList());
+                                      final data =
+                                          await ApiService.getRoomsByFloor(
+                                            v.id,
+                                          );
+                                      controller.globalRooms.assignAll(
+                                        data
+                                            .map((e) => RoomModel.fromJson(e))
+                                            .toList(),
+                                      );
                                     }
                                   },
                                 ),
@@ -209,13 +223,13 @@ class AddHostelMembersPage extends StatelessWidget {
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Column(
-                              children: controller.students.asMap().entries.map((
-                                entry,
-                              ) {
-                                int i = entry.key;
-                                HostelStudentModel data = entry.value;
-                                return _buildStudentCard(controller, i, data);
-                              }).toList(),
+                              children: controller.students.asMap().entries.map(
+                                (entry) {
+                                  int i = entry.key;
+                                  HostelStudentModel data = entry.value;
+                                  return _buildStudentCard(controller, i, data);
+                                },
+                              ).toList(),
                             ),
                           ),
                         ],
@@ -262,16 +276,24 @@ class AddHostelMembersPage extends StatelessWidget {
                               final student = controller.students
                                   .firstWhereOrNull((s) => s.sid == entry.key);
                               final selection = entry.value;
-                              
-                              // Use individual selection or global selection
-                              final hostelId = selection.selectedHostel.value?.id.toString() ?? 
-                                             controller.globalHostel.value?.id.toString();
-                              final floorId = selection.selectedFloor.value?.id.toString() ?? 
-                                            controller.globalFloor.value?.id.toString();
-                              final roomId = selection.selectedRoom.value?.id.toString() ?? 
-                                           controller.globalRoom.value?.id.toString() ?? "";
 
-                              if (student != null && hostelId != null && floorId != null) {
+                              // Use individual selection or global selection
+                              final hostelId =
+                                  selection.selectedHostel.value?.id
+                                      .toString() ??
+                                  controller.globalHostel.value?.id.toString();
+                              final floorId =
+                                  selection.selectedFloor.value?.id
+                                      .toString() ??
+                                  controller.globalFloor.value?.id.toString();
+                              final roomId =
+                                  selection.selectedRoom.value?.id.toString() ??
+                                  controller.globalRoom.value?.id.toString() ??
+                                  "";
+
+                              if (student != null &&
+                                  hostelId != null &&
+                                  floorId != null) {
                                 await controller.saveHostelMember(
                                   student: student,
                                   hostelId: hostelId,

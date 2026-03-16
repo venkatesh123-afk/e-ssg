@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../widgets/staff_header.dart';
+import 'package:student_app/admin_app/admin_edit_syllabus_page.dart';
+import 'package:student_app/admin_app/admin_header.dart';
+import 'package:student_app/admin_app/track_syllabus_progress_page.dart';
+import 'package:student_app/staff_app/controllers/syllabus_controller.dart';
+import 'package:student_app/staff_app/model/syllabus_model.dart';
+import 'package:student_app/admin_app/exam_syllabus_details_page.dart';
+import 'package:student_app/staff_app/widgets/skeleton.dart';
 import 'admin_add_syllabus_page.dart';
-import 'edit_syllabus_page.dart';
-import 'syllabus_details_page.dart';
-import 'track_syllabus_progress_page.dart';
-import '../controllers/syllabus_controller.dart';
-import '../model/syllabus_model.dart';
-import '../widgets/skeleton.dart';
 
 class AdminSyllabusPage extends StatefulWidget {
   const AdminSyllabusPage({super.key});
@@ -25,8 +25,8 @@ class _AdminSyllabusPageState extends State<AdminSyllabusPage> {
       backgroundColor: Colors.white,
       body: Column(
         children: [
-          const StaffHeader(title: "Syllabus"),
-          
+          const AdminHeader(title: "Syllabus"),
+
           Expanded(
             child: Container(
               margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
@@ -43,10 +43,13 @@ class _AdminSyllabusPageState extends State<AdminSyllabusPage> {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: const Color(0xFF8B5CF6).withOpacity(0.5)),
+                      border: Border.all(
+                        color: const Color(0xFF8B5CF6).withOpacity(0.5),
+                      ),
                     ),
                     child: TextField(
-                      onChanged: (value) => controller.searchQuery.value = value,
+                      onChanged: (value) =>
+                          controller.searchQuery.value = value,
                       decoration: const InputDecoration(
                         icon: Icon(Icons.search, color: Colors.grey, size: 20),
                         hintText: "Type a Keyword.....",
@@ -56,7 +59,7 @@ class _AdminSyllabusPageState extends State<AdminSyllabusPage> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  
+
                   // Card List
                   Expanded(
                     child: Obx(() {
@@ -66,13 +69,16 @@ class _AdminSyllabusPageState extends State<AdminSyllabusPage> {
                           itemCount: 5,
                           itemBuilder: (context, index) => const Padding(
                             padding: EdgeInsets.only(bottom: 16),
-                            child: SkeletonLoader(height: 350, width: double.infinity),
+                            child: SkeletonLoader(
+                              height: 350,
+                              width: double.infinity,
+                            ),
                           ),
                         );
                       }
-                      
+
                       final list = controller.filteredSyllabus;
-                      
+
                       if (list.isEmpty) {
                         return const Center(
                           child: Text("No syllabus data found"),
@@ -95,7 +101,7 @@ class _AdminSyllabusPageState extends State<AdminSyllabusPage> {
               ),
             ),
           ),
-          
+
           // Bottom Button
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
@@ -119,17 +125,25 @@ class _AdminSyllabusPageState extends State<AdminSyllabusPage> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const AdminAddSyllabusPage()),
+                    MaterialPageRoute(
+                      builder: (context) => const AdminAddSyllabusPage(),
+                    ),
                   );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.transparent,
                   shadowColor: Colors.transparent,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 child: const Text(
                   "Add Syllabus",
-                  style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
@@ -167,62 +181,118 @@ class _AdminSyllabusPageState extends State<AdminSyllabusPage> {
           _buildInfoRow("Course", item.courseName ?? "N/A"),
           _buildInfoRow("Batch", item.batchName ?? "N/A"),
           _buildInfoRow("Chapter", item.chapterName),
-          
+
           const SizedBox(height: 10),
           Row(
             children: [
-              const Text("Start date : ", style: TextStyle(color: Colors.black87, fontSize: 13, fontWeight: FontWeight.w500)),
+              const Text(
+                "Start date : ",
+                style: TextStyle(
+                  color: Colors.black87,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: const Color(0xFFE8F5E9),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Text(item.expectedStartDate, style: const TextStyle(color: Color(0xFF2E7D32), fontSize: 12, fontWeight: FontWeight.bold)),
+                child: Text(
+                  item.expectedStartDate,
+                  style: const TextStyle(
+                    color: Color(0xFF2E7D32),
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ],
           ),
           const SizedBox(height: 8),
           Row(
             children: [
-              const Text("Exp. date : ", style: TextStyle(color: Colors.black87, fontSize: 13, fontWeight: FontWeight.w500)),
+              const Text(
+                "Exp. date : ",
+                style: TextStyle(
+                  color: Colors.black87,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: const Color(0xFFFFEBEE),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Text(item.expectedAccomplishedDate, style: const TextStyle(color: Color(0xFFC62828), fontSize: 12, fontWeight: FontWeight.bold)),
+                child: Text(
+                  item.expectedAccomplishedDate,
+                  style: const TextStyle(
+                    color: Color(0xFFC62828),
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ],
           ),
           const SizedBox(height: 12),
-          
+
           Row(
             children: [
-              const Text("Progress : ", style: TextStyle(color: Colors.black87, fontSize: 13, fontWeight: FontWeight.w500)),
+              const Text(
+                "Progress : ",
+                style: TextStyle(
+                  color: Colors.black87,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
               Expanded(
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(5),
                   child: LinearProgressIndicator(
                     value: item.progressPercent / 100,
                     backgroundColor: Colors.grey.shade100,
-                    valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF2196F3)),
+                    valueColor: const AlwaysStoppedAnimation<Color>(
+                      Color(0xFF2196F3),
+                    ),
                     minHeight: 8,
                   ),
                 ),
               ),
               const SizedBox(width: 10),
-              Text("${item.progressPercent}%", style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+              Text(
+                "${item.progressPercent}%",
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 15),
-          
+
           Row(
             children: [
-              const Text("Actions : ", style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold)),
+              const Text(
+                "Actions : ",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               const SizedBox(width: 8),
-              
+
               // Edit Icon
               GestureDetector(
                 onTap: () {
@@ -234,11 +304,15 @@ class _AdminSyllabusPageState extends State<AdminSyllabusPage> {
                     color: const Color(0xFFFFF3E0),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Icon(Icons.edit_outlined, color: Colors.orange, size: 22),
+                  child: const Icon(
+                    Icons.edit_outlined,
+                    color: Colors.orange,
+                    size: 22,
+                  ),
                 ),
               ),
               const SizedBox(width: 12),
-              
+
               // Delete Icon
               GestureDetector(
                 onTap: () {
@@ -256,7 +330,11 @@ class _AdminSyllabusPageState extends State<AdminSyllabusPage> {
                     color: const Color(0xFFFFEBEE),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Icon(Icons.delete_outline, color: Colors.red, size: 22),
+                  child: const Icon(
+                    Icons.delete_outline,
+                    color: Colors.red,
+                    size: 22,
+                  ),
                 ),
               ),
               const SizedBox(width: 12),
@@ -272,7 +350,11 @@ class _AdminSyllabusPageState extends State<AdminSyllabusPage> {
                     color: const Color(0xFFE8EAF6),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Icon(Icons.visibility, color: Color(0xFF0D47A1), size: 22),
+                  child: const Icon(
+                    Icons.visibility,
+                    color: Color(0xFF0D47A1),
+                    size: 22,
+                  ),
                 ),
               ),
               const SizedBox(width: 12),
@@ -288,7 +370,11 @@ class _AdminSyllabusPageState extends State<AdminSyllabusPage> {
                     color: const Color(0xFFE3F2FD),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Icon(Icons.trending_up, color: Color(0xFF1976D2), size: 22),
+                  child: const Icon(
+                    Icons.trending_up,
+                    color: Color(0xFF1976D2),
+                    size: 22,
+                  ),
                 ),
               ),
             ],
@@ -305,11 +391,19 @@ class _AdminSyllabusPageState extends State<AdminSyllabusPage> {
         children: [
           Text(
             "$label : ",
-            style: const TextStyle(color: Colors.black87, fontSize: 13, fontWeight: FontWeight.w500),
+            style: const TextStyle(
+              color: Colors.black87,
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+            ),
           ),
           Text(
             value,
-            style: const TextStyle(color: Colors.black, fontSize: 13, fontWeight: FontWeight.w600),
+            style: const TextStyle(
+              color: Colors.black,
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ],
       ),

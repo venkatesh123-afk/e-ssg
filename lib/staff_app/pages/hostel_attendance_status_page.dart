@@ -24,7 +24,8 @@ class HostelAttendanceStatusPage extends StatelessWidget {
 
     // Ensure the first room is selected by default on page entry
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (hostelCtrl.selectedRoomIndex.value != 0 && hostelCtrl.roomsSummary.isNotEmpty) {
+      if (hostelCtrl.selectedRoomIndex.value != 0 &&
+          hostelCtrl.roomsSummary.isNotEmpty) {
         hostelCtrl.selectedRoomIndex.value = 0;
       }
     });
@@ -74,14 +75,19 @@ class HostelAttendanceStatusPage extends StatelessWidget {
             int notMarked = 0;
 
             for (var row in hostelCtrl.roomsSummary) {
-              totalStudents += int.tryParse(row['total']?.toString() ?? '0') ?? 0;
+              totalStudents +=
+                  int.tryParse(row['total']?.toString() ?? '0') ?? 0;
               present += int.tryParse(row['present']?.toString() ?? '0') ?? 0;
               outing += int.tryParse(row['outing']?.toString() ?? '0') ?? 0;
-              homePass += int.tryParse(row['home_pass']?.toString() ?? '0') ?? 0;
-              selfOuting += int.tryParse(row['self_outing']?.toString() ?? '0') ?? 0;
-              selfHome += int.tryParse(row['self_home']?.toString() ?? '0') ?? 0;
+              homePass +=
+                  int.tryParse(row['home_pass']?.toString() ?? '0') ?? 0;
+              selfOuting +=
+                  int.tryParse(row['self_outing']?.toString() ?? '0') ?? 0;
+              selfHome +=
+                  int.tryParse(row['self_home']?.toString() ?? '0') ?? 0;
               missing += int.tryParse(row['missing']?.toString() ?? '0') ?? 0;
-              notMarked += int.tryParse(row['not_marked']?.toString() ?? '0') ?? 0;
+              notMarked +=
+                  int.tryParse(row['not_marked']?.toString() ?? '0') ?? 0;
             }
 
             return Padding(
@@ -94,14 +100,47 @@ class HostelAttendanceStatusPage extends StatelessWidget {
                 crossAxisSpacing: 8,
                 childAspectRatio: 1.3,
                 children: [
-                  _SummaryCard(label: "TOTAL STUDENTS", value: "$totalStudents", color: const Color(0xFF7C77D5)),
-                  _SummaryCard(label: "PRESENT", value: "$present", color: const Color(0xFF34B38A)),
-                  _SummaryCard(label: "OUTING", value: "$outing", color: const Color(0xFF4DAAF1)),
-                  _SummaryCard(label: "HOME PASS", value: "$homePass", color: const Color(0xFF777E97)),
-                  _SummaryCard(label: "SELF OUTING", value: "$selfOuting", color: const Color(0xFFFDB750)),
-                  _SummaryCard(label: "SELF HOME", value: "$selfHome", color: const Color(0xFF3B434E)),
-                  _SummaryCard(label: "MISSING", value: "$missing", color: const Color(0xFFFD5C63)),
-                  _SummaryCard(label: "NOT MARKED", value: "$notMarked", color: const Color(0xFFF0F0F0), textColor: Colors.black),
+                  _SummaryCard(
+                    label: "TOTAL STUDENTS",
+                    value: "$totalStudents",
+                    color: const Color(0xFF7C77D5),
+                  ),
+                  _SummaryCard(
+                    label: "PRESENT",
+                    value: "$present",
+                    color: const Color(0xFF34B38A),
+                  ),
+                  _SummaryCard(
+                    label: "OUTING",
+                    value: "$outing",
+                    color: const Color(0xFF4DAAF1),
+                  ),
+                  _SummaryCard(
+                    label: "HOME PASS",
+                    value: "$homePass",
+                    color: const Color(0xFF777E97),
+                  ),
+                  _SummaryCard(
+                    label: "SELF OUTING",
+                    value: "$selfOuting",
+                    color: const Color(0xFFFDB750),
+                  ),
+                  _SummaryCard(
+                    label: "SELF HOME",
+                    value: "$selfHome",
+                    color: const Color(0xFF3B434E),
+                  ),
+                  _SummaryCard(
+                    label: "MISSING",
+                    value: "$missing",
+                    color: const Color(0xFFFD5C63),
+                  ),
+                  _SummaryCard(
+                    label: "NOT MARKED",
+                    value: "$notMarked",
+                    color: const Color(0xFFF0F0F0),
+                    textColor: Colors.black,
+                  ),
                 ],
               ),
             );
@@ -348,7 +387,10 @@ class _AttendanceStatusCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: notMarked < total
                       ? const Color(0xFF4ADE80) // Green
@@ -367,9 +409,12 @@ class _AttendanceStatusCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          Divider(height: 1, thickness: 1, color: Colors.grey.withOpacity(0.08)),
+          Divider(
+            height: 1,
+            thickness: 1,
+            color: Colors.grey.withOpacity(0.08),
+          ),
           const SizedBox(height: 14),
-
 
           // Metrics Grid (Exact color calibration from image)
           Row(

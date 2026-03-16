@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../widgets/staff_header.dart';
-import '../controllers/add_edit_syllabus_controller.dart';
+import 'package:student_app/admin_app/admin_header.dart';
+import 'package:student_app/staff_app/controllers/add_edit_syllabus.dart';
 
 class AddEditSyllabusPage extends StatefulWidget {
   const AddEditSyllabusPage({super.key});
@@ -11,9 +11,11 @@ class AddEditSyllabusPage extends StatefulWidget {
 }
 
 class _AddEditSyllabusPageState extends State<AddEditSyllabusPage> {
-  final AddEditSyllabusController controller = Get.put(AddEditSyllabusController());
+  final AddEditSyllabusController controller = Get.put(
+    AddEditSyllabusController(),
+  );
   final TextEditingController _syllabusController = TextEditingController();
-  
+
   late final int examId;
   late final int batchId;
   late final int subjectId;
@@ -38,8 +40,8 @@ class _AddEditSyllabusPageState extends State<AddEditSyllabusPage> {
       backgroundColor: Colors.white,
       body: Column(
         children: [
-          /// STAFF HEADER
-          StaffHeader(
+          // HEADER
+          AdminHeader(
             title: "Add/Edit Syllabus - $subjectName",
             onBack: () => Get.back(),
           ),
@@ -83,36 +85,44 @@ class _AddEditSyllabusPageState extends State<AddEditSyllabusPage> {
                   /// SAVE BUTTON
                   Align(
                     alignment: Alignment.centerRight,
-                    child: Obx(() => ElevatedButton(
-                      onPressed: controller.isSaving.value 
-                        ? null 
-                        : () => controller.saveSingleSyllabus(
-                            examId: examId,
-                            batchId: batchId,
-                            subjectId: subjectId,
-                            syllabus: _syllabusController.text,
+                    child: Obx(
+                      () => ElevatedButton(
+                        onPressed: controller.isSaving.value
+                            ? null
+                            : () => controller.saveSingleSyllabus(
+                                examId: examId,
+                                batchId: batchId,
+                                subjectId: subjectId,
+                                syllabus: _syllabusController.text,
+                              ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF7B5CFF),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 18,
+                            vertical: 10,
                           ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF7B5CFF),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 18,
-                          vertical: 10,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
                         ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
+                        child: controller.isSaving.value
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Text(
+                                "Save Syllabus",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.white,
+                                ),
+                              ),
                       ),
-                      child: controller.isSaving.value
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-                          )
-                        : const Text(
-                            "Save Syllabus",
-                            style: TextStyle(fontSize: 14, color: Colors.white),
-                          ),
-                    )),
+                    ),
                   ),
                 ],
               ),

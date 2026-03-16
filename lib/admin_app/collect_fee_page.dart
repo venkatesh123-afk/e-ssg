@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../widgets/staff_header.dart';
+import 'package:student_app/admin_app/admin_header.dart';
 
 class CollectFeePage extends StatefulWidget {
   final String studentName;
@@ -22,7 +22,7 @@ class _CollectFeePageState extends State<CollectFeePage> {
       backgroundColor: Colors.white,
       body: Column(
         children: [
-          const StaffHeader(title: 'Collect Tution Fee'),
+          const AdminHeader(title: 'Collect Tution Fee'),
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(16),
@@ -206,7 +206,11 @@ class _CollectFeePageState extends State<CollectFeePage> {
     );
   }
 
-  Widget _buildInputDropdown(String text, IconData icon, {bool isDate = false}) {
+  Widget _buildInputDropdown(
+    String text,
+    IconData icon, {
+    bool isDate = false,
+  }) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),

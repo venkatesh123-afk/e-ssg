@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../widgets/staff_header.dart';
-import '../model/syllabus_model.dart';
-import '../api/api_service.dart';
+import 'package:student_app/admin_app/admin_header.dart';
+import 'package:student_app/staff_app/api/api_service.dart';
+import 'package:student_app/staff_app/model/syllabus_model.dart';
 
 class TrackSyllabusProgressPage extends StatefulWidget {
   final SyllabusModel syllabus;
@@ -157,7 +157,7 @@ class _TrackSyllabusProgressPageState extends State<TrackSyllabusProgressPage> {
       body: Column(
         children: [
           /// HEADER
-          const StaffHeader(title: "Track Syllabus Progress"),
+          const AdminHeader(title: "Track Syllabus Progress"),
 
           const SizedBox(height: 15),
 
@@ -166,8 +166,10 @@ class _TrackSyllabusProgressPageState extends State<TrackSyllabusProgressPage> {
           else
             Expanded(
               child: SingleChildScrollView(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 18, vertical: 20),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 18,
+                  vertical: 20,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -197,7 +199,9 @@ class _TrackSyllabusProgressPageState extends State<TrackSyllabusProgressPage> {
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                           const SizedBox(height: 4),
-                          Text("Chapter Name :  ${currentSyllabus.chapterName}"),
+                          Text(
+                            "Chapter Name :  ${currentSyllabus.chapterName}",
+                          ),
                         ],
                       ),
                     ),
@@ -269,8 +273,10 @@ class _TrackSyllabusProgressPageState extends State<TrackSyllabusProgressPage> {
                       children: [
                         Text("0% (Started)", style: TextStyle(fontSize: 10)),
                         Text("50% (Midway)", style: TextStyle(fontSize: 10)),
-                        Text("100% (Completed)",
-                            style: TextStyle(fontSize: 10)),
+                        Text(
+                          "100% (Completed)",
+                          style: TextStyle(fontSize: 10),
+                        ),
                       ],
                     ),
 
@@ -345,7 +351,10 @@ class _TrackSyllabusProgressPageState extends State<TrackSyllabusProgressPage> {
                             gradient: LinearGradient(
                               colors: isUpdating
                                   ? [Colors.grey, Colors.grey]
-                                  : [const Color(0xff6A5AE0), const Color(0xffB06AB3)],
+                                  : [
+                                      const Color(0xff6A5AE0),
+                                      const Color(0xffB06AB3),
+                                    ],
                             ),
                             borderRadius: BorderRadius.circular(8),
                           ),

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../widgets/staff_header.dart';
+import 'package:student_app/admin_app/admin_header.dart';
+import 'package:student_app/staff_app/model/syllabus_model.dart';
 
 class SyllabusDetailsPage extends StatelessWidget {
-  const SyllabusDetailsPage({super.key});
+  const SyllabusDetailsPage({super.key, required SyllabusModel syllabus});
 
   @override
   Widget build(BuildContext context) {
@@ -20,11 +21,8 @@ class SyllabusDetailsPage extends StatelessWidget {
       backgroundColor: Colors.white,
       body: Column(
         children: [
-          /// STAFF HEADER
-          StaffHeader(
-            title: "Syllabus Details",
-            onBack: () => Get.back(),
-          ),
+          ///  HEADER
+          AdminHeader(title: "Syllabus Details", onBack: () => Get.back()),
 
           Expanded(
             child: SingleChildScrollView(
@@ -35,7 +33,10 @@ class SyllabusDetailsPage extends StatelessWidget {
                   /// SUBJECT TITLE
                   Text(
                     subjectName.toUpperCase(),
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
 
                   const SizedBox(height: 12),
@@ -95,7 +96,9 @@ class SyllabusDetailsPage extends StatelessWidget {
                     child: Align(
                       alignment: Alignment.topLeft,
                       child: Text(
-                        syllabusContent.isEmpty ? "No syllabus content added yet." : syllabusContent,
+                        syllabusContent.isEmpty
+                            ? "No syllabus content added yet."
+                            : syllabusContent,
                         style: const TextStyle(color: Colors.black87),
                       ),
                     ),

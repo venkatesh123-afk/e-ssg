@@ -797,7 +797,9 @@ class ApiService {
     debugPrint("DELETE HOSTEL MEMBER RESPONSE: $res");
 
     final isSuccess =
-        res["success"] == true || res["success"] == "true" || res["success"] == 1;
+        res["success"] == true ||
+        res["success"] == "true" ||
+        res["success"] == 1;
 
     if (!isSuccess) {
       throw Exception(
@@ -1509,7 +1511,9 @@ class ApiService {
     final res = await postRequest(ApiCollection.storeHomework, body: body);
 
     final success =
-        res['success'] == true || res['success'] == "true" || res['success'] == 1;
+        res['success'] == true ||
+        res['success'] == "true" ||
+        res['success'] == 1;
 
     if (!success) {
       throw Exception(res['message'] ?? "Failed to save homework");
@@ -1520,7 +1524,9 @@ class ApiService {
   static Future<SyllabusModel> getSyllabusDetails(int id) async {
     final res = await getRequest(ApiCollection.showAcademicSyllabus(id));
 
-    if ((res["success"] == true || res["success"] == "true" || res["success"] == 1) &&
+    if ((res["success"] == true ||
+            res["success"] == "true" ||
+            res["success"] == 1) &&
         res["indexdata"] != null) {
       return SyllabusModel.fromMap(Map<String, dynamic>.from(res["indexdata"]));
     }
@@ -1550,7 +1556,9 @@ class ApiService {
     );
 
     final bool isSuccess =
-        res["success"] == true || res["success"] == "true" || res["success"] == 1;
+        res["success"] == true ||
+        res["success"] == "true" ||
+        res["success"] == 1;
 
     if (!isSuccess) {
       throw Exception(res["message"] ?? "Failed to update syllabus progress");
@@ -1588,16 +1596,23 @@ class ApiService {
     );
 
     final bool isSuccess =
-        res["success"] == true || res["success"] == "true" || res["success"] == 1;
+        res["success"] == true ||
+        res["success"] == "true" ||
+        res["success"] == 1;
 
     if (!isSuccess) {
       throw Exception(res["message"] ?? "Failed to update syllabus");
     }
   }
 
-  static Future<List<Map<String, dynamic>>> getSubjectsByBatch(int batchId) async {
+  static Future<List<Map<String, dynamic>>> getSubjectsByBatch(
+    int batchId,
+  ) async {
     final res = await getRequest(ApiCollection.subjectsByBatch(batchId));
-    final success = res['success'] == true || res['success'] == "true" || res['success'] == 1;
+    final success =
+        res['success'] == true ||
+        res['success'] == "true" ||
+        res['success'] == 1;
     final dynamic rawData = res['indexdata'] ?? res['data'] ?? res['subjects'];
 
     if (success && rawData != null && rawData is List) {

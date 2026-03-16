@@ -2,16 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
+import 'package:student_app/staff_app/controllers/admin_dashboard_controller.dart';
+import 'package:student_app/staff_app/model/admin_dashboard_attendance_model.dart';
+import 'package:student_app/staff_app/model/admin_dashboard_finance_model.dart';
 import 'package:student_app/staff_app/pages/attendance_summary_page.dart';
-import 'package:student_app/staff_app/pages/staff_dashboard_page.dart';
+import 'package:student_app/staff_app/utils/iconify_icons.dart';
+import 'package:student_app/staff_app/controllers/auth_controller.dart';
+import 'package:student_app/staff_app/controllers/profile_controller.dart';
+import 'package:student_app/staff_app/pages/profile_page.dart';
 import 'admin_student_search_page.dart';
-
-import '../utils/iconify_icons.dart';
-
 import 'admin_syllabus_page.dart';
-import '../controllers/admin_dashboard_controller.dart';
-import '../model/admin_dashboard_finance_model.dart';
-import '../model/admin_dashboard_attendance_model.dart';
+import 'admin_bottom_nav_bar.dart';
 
 class AdminDashboardPage extends StatefulWidget {
   const AdminDashboardPage({super.key});
@@ -25,9 +26,19 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   final AdminDashboardController controller = Get.put(
     AdminDashboardController(),
   );
+  late ProfileController profileCtrl;
   String _activeTab = "Admissions";
   String _activeFeeTab = "Todays";
   String _activeExpenseTab = "Todays";
+
+  @override
+  void initState() {
+    super.initState();
+    profileCtrl = Get.isRegistered<ProfileController>()
+        ? Get.find<ProfileController>()
+        : Get.put(ProfileController(), permanent: true);
+    Get.put(AdminMainController(), permanent: true).changeIndex(0);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,10 +97,129 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                           hasBadge: true,
                         ),
                         const SizedBox(width: 10),
-                        const CircleAvatar(
-                          radius: 18,
-                          backgroundColor: Colors.white24,
-                          child: Icon(Icons.person, color: Colors.white),
+                        PopupMenuButton<String>(
+                          position: PopupMenuPosition.under,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          elevation: 8,
+                          onSelected: (v) async {
+                            switch (v) {
+                              case 'profile':
+                                Get.to(() => const ProfilePage());
+                                break;
+                              case 'logout':
+                                Get.dialog(
+                                  AlertDialog(
+                                    title: const Text("Logout"),
+                                    content: const Text(
+                                      "Are you sure you want to logout?",
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Get.back(),
+                                        child: const Text("Cancel"),
+                                      ),
+                                      TextButton(
+                                        onPressed: () async {
+                                          Get.back();
+                                          await Get.find<AuthController>()
+                                              .logout();
+                                        },
+                                        child: const Text(
+                                          "Logout",
+                                          style: TextStyle(color: Colors.red),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                                break;
+                            }
+                          },
+                          itemBuilder: (_) => const [
+                            PopupMenuItem(
+                              value: 'profile',
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.person_outline_rounded,
+                                    size: 20,
+                                    color: Color(0xFF8B5CF6),
+                                  ),
+                                  SizedBox(width: 10),
+                                  Text(
+                                    "Profile",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            PopupMenuDivider(),
+                            PopupMenuItem(
+                              value: 'logout',
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.logout_rounded,
+                                    size: 20,
+                                    color: Colors.redAccent,
+                                  ),
+                                  SizedBox(width: 10),
+                                  Text(
+                                    "Logout",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.redAccent,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                          child: Padding(
+                            padding: const EdgeInsets.only(right: 0),
+                            child: Obx(() {
+                              final p = profileCtrl.profile.value;
+                              final name = p?.name ?? "";
+                              final avatar = p?.avatar ?? "";
+                              final bool hasValidAvatar =
+                                  avatar.isNotEmpty && avatar != "avatar.png";
+
+                              return Container(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.white.withOpacity(0.5),
+                                    width: 1.5,
+                                  ),
+                                ),
+                                child: CircleAvatar(
+                                  radius: 20,
+                                  backgroundColor: Colors.white24,
+                                  backgroundImage: hasValidAvatar
+                                      ? NetworkImage(
+                                          "https://dev.srisaraswathigroups.in/uploads/$avatar",
+                                        )
+                                      : null,
+                                  child: !hasValidAvatar
+                                      ? Text(
+                                          name.isNotEmpty
+                                              ? name[0].toUpperCase()
+                                              : "?",
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                          ),
+                                        )
+                                      : null,
+                                ),
+                              );
+                            }),
+                          ),
                         ),
                       ],
                     ),
@@ -184,7 +314,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
           ),
         ),
       ),
-      bottomNavigationBar: _buildBottomNav(),
+      bottomNavigationBar: const AdminBottomNavBar(),
     );
   }
 
@@ -1508,14 +1638,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                 _buildDrawerItem(
                   Icons.grid_view_outlined,
                   "Staff Dashboard",
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const HomeDashboardPage(),
-                      ),
-                    );
-                  },
+                  onTap: () => Get.toNamed('/adminStaffDashboard'),
                 ),
 
                 _buildDrawerItem(
@@ -1752,35 +1875,6 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildBottomNav() {
-    return Container(
-      height: 75,
-      decoration: BoxDecoration(
-        color: const Color(0xFF7E57C2),
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(30),
-          topRight: Radius.circular(30),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildNavItem(Icons.home, "Home", true),
-          _buildNavItem(Icons.bar_chart, "Attendance", false),
-          _buildNavItem(Icons.account_balance_wallet_outlined, "Fees", false),
-          _buildNavItem(Icons.person_outline, "Profile", false),
-        ],
       ),
     );
   }
@@ -2820,38 +2914,6 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
           fontSize: 16,
         ),
       ),
-    );
-  }
-
-  Widget _buildNavItem(IconData icon, String label, bool isActive) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        if (isActive)
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: Colors.white.withAlpha(64),
-              borderRadius: BorderRadius.circular(15),
-            ),
-            child: Row(
-              children: [
-                Icon(icon, color: Colors.white, size: 24),
-                const SizedBox(width: 8),
-                Text(
-                  label,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 13,
-                  ),
-                ),
-              ],
-            ),
-          )
-        else
-          Icon(icon, color: Colors.white.withAlpha(178), size: 24),
-      ],
     );
   }
 }

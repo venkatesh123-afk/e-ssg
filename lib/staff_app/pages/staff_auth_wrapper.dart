@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:student_app/admin_app/admin_dashboard_page.dart';
 import 'package:student_app/staff_app/pages/staff_dashboard_page.dart';
 import 'package:student_app/staff_app/pages/login_page.dart';
 import 'package:student_app/staff_app/utils/get_storage.dart';
@@ -22,6 +23,8 @@ class StaffAuthWrapper extends StatelessWidget {
     // Check role and return appropriate dashboard
     if (role == 'student') {
       return const DashboardPage();
+    } else if (role == 'superadmin' || role == 'admin') {
+      return const AdminDashboardPage();
     } else {
       // Default to HomeDashboardPage for staff or other roles
       return const HomeDashboardPage();

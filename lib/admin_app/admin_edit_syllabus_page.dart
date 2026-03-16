@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import '../model/syllabus_model.dart';
-import '../model/batch_model.dart';
-import '../model/subject_model.dart';
-import '../widgets/staff_header.dart';
 import 'package:get/get.dart';
-import '../controllers/edit_syllabus_controller.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:student_app/admin_app/admin_header.dart';
+import 'package:student_app/staff_app/controllers/edit_syllabus_controller.dart';
+import 'package:student_app/staff_app/model/batch_model.dart';
+import 'package:student_app/staff_app/model/subject_model.dart';
+import 'package:student_app/staff_app/model/syllabus_model.dart';
 
 class EditSyllabusPage extends StatefulWidget {
   final SyllabusModel? syllabus;
@@ -53,7 +54,7 @@ class _EditSyllabusPageState extends State<EditSyllabusPage> {
       body: Column(
         children: [
           /// HEADER
-          const StaffHeader(title: "Edit Syllabus"),
+          const AdminHeader(title: "Edit Syllabus"),
 
           const SizedBox(height: 15),
 
@@ -73,7 +74,9 @@ class _EditSyllabusPageState extends State<EditSyllabusPage> {
                           .toList(),
                       (val) {
                         final batch = controller.batchCtrl.batches
-                            .firstWhereOrNull((BatchModel b) => b.batchName == val);
+                            .firstWhereOrNull(
+                              (BatchModel b) => b.batchName == val,
+                            );
                         controller.batchCtrl.selectedBatch.value = batch;
                       },
                       isLoading: controller.batchCtrl.isLoading.value,
@@ -128,7 +131,8 @@ class _EditSyllabusPageState extends State<EditSyllabusPage> {
                                 id: widget.syllabus!.id,
                                 chapterName: chapterController.text,
                                 expectedStartDate: startDateController.text,
-                                expectedAccomplishedDate: endDateController.text,
+                                expectedAccomplishedDate:
+                                    endDateController.text,
                                 status: status ?? "Active",
                               );
                             }
@@ -143,7 +147,9 @@ class _EditSyllabusPageState extends State<EditSyllabusPage> {
                               borderRadius: BorderRadius.circular(15),
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color(0xff7445F6).withOpacity(0.35),
+                                  color: const Color(
+                                    0xff7445F6,
+                                  ).withOpacity(0.35),
                                   blurRadius: 12,
                                   offset: const Offset(0, 6),
                                 ),
